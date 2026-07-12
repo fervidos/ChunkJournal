@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model World {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  screenshots Screenshot[]
+}
+
+model Screenshot {
+  id              String   @id @default(cuid())
+  title           String?
+  description     String?
+  date            DateTime @default(now())
+  filename        String
+  width           Int?
+  height          Int?
+  fileSize        Int?
+  mimeType        String   @default("image/png")
+  s3Key           String   @unique
+  thumbnailS3Key  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  worldId String?
+  world   World?  @relation(fields: [worldId], references: [id], onDelete: SetNull)
+
+  tags ScreenshotTag[]
+
+  @@index([worldId])
+  @@index([date])
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String @unique
+
+  screenshots ScreenshotTag[]
+}
+
+model ScreenshotTag {
+  screenshotId String
+  tagId        String
+
+  screenshot Screenshot @relation(fields: [screenshotId], references: [id], onDelete: Cascade)
+  tag        Tag        @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([screenshotId, tagId])
+}
