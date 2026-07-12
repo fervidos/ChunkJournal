@@ -25,7 +25,6 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState('newest')
-  const [page, setPage] = useState(1)
   const [authed, setAuthed] = useState(false)
 
   useEffect(() => {
@@ -37,7 +36,6 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
     tag?: string | null
     search?: string
     sort?: string
-    page?: number
   }) => {
     setLoading(true)
     const params = new URLSearchParams()
@@ -45,13 +43,10 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
     const t = opts?.tag ?? activeTag
     const s = opts?.search ?? search
     const so = opts?.sort ?? sort
-    const p = opts?.page ?? page
     if (w) params.set('world', w)
     if (t) params.set('tag', t)
     if (s) params.set('search', s)
     params.set('sort', so)
-    params.set('page', String(p))
-    params.set('limit', '48')
 
     try {
       const res = await fetch(`/api/screenshots?${params}`)
@@ -63,7 +58,7 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
     } finally {
       setLoading(false)
     }
-  }, [activeWorld, activeTag, search, sort, page])
+  }, [activeWorld, activeTag, search, sort])
 
   const refreshTags = useCallback(async () => {
     try {
@@ -87,18 +82,15 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
         total={total}
         onWorldChange={(slug) => {
           setActiveWorld(slug)
-          setPage(1)
-          fetchScreenshots({ world: slug, page: 1 })
+          fetchScreenshots({ world: slug })
         }}
         onTagChange={(name) => {
           setActiveTag(name)
-          setPage(1)
-          fetchScreenshots({ tag: name, page: 1 })
+          fetchScreenshots({ tag: name })
         }}
         onSearchChange={(q) => {
           setSearch(q)
-          setPage(1)
-          fetchScreenshots({ search: q, page: 1 })
+          fetchScreenshots({ search: q })
         }}
       />
       <main className="flex-1 flex flex-col min-w-0">
@@ -179,7 +171,7 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
           onClose={() => setShowUpload(false)}
           onUploaded={() => {
             setShowUpload(false)
-            fetchScreenshots({ page: 1 })
+            fetchScreenshots()
             refreshTags()
           }}
           worlds={worlds}
