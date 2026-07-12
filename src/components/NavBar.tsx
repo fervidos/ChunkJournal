@@ -9,11 +9,11 @@ export default function NavBar() {
   const pathname = usePathname()
   const [authed, setAuthed] = useState(false)
 
-  if (pathname === '/gallery') return null
-
   useEffect(() => {
     setAuthed(!!getClientToken())
   }, [])
+
+  if (pathname === '/gallery') return null
 
   function handleLogout() {
     clearClientToken()
