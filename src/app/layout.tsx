@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Geist, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -36,6 +36,9 @@ export const metadata: Metadata = {
     title: "ChunkJournal",
     description: "A collection of the worlds I've explored, the places I've built, and the memories I've made with the people I've met along the way.",
   },
+};
+
+export const viewport: Viewport = {
   themeColor: "#1a1a1a",
 };
 

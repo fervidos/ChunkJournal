@@ -63,6 +63,7 @@ export default function OpenGraphImage() {
         >
           <div
             style={{
+              display: 'flex',
               fontSize: '88px',
               fontWeight: 800,
               letterSpacing: '-0.03em',
@@ -71,7 +72,8 @@ export default function OpenGraphImage() {
               lineHeight: 1,
             }}
           >
-            <span style={{ color: '#7BBC5E' }}>Chunk</span>Journal
+            <span style={{ color: '#7BBC5E' }}>Chunk</span>
+            <span>Journal</span>
           </div>
           <div
             style={{
