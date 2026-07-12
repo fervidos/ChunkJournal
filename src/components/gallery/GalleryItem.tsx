@@ -25,11 +25,16 @@ export default function GalleryItem({ screenshot, onSelect }: Props) {
         onLoad={() => setLoaded(true)}
         className={`w-full h-full object-cover block transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-250" />
-      <div className="absolute bottom-0 left-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-250 pointer-events-none">
-        <span className="text-xs text-white/85 font-medium">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 p-2.5 pointer-events-none">
+        <span className="text-xs text-white/90 font-medium leading-snug line-clamp-1">
           {screenshot.title || screenshot.filename}
         </span>
+        {screenshot.description && (
+          <span className="text-[0.625rem] text-white/50 leading-snug line-clamp-1 mt-0.5 block">
+            {screenshot.description}
+          </span>
+        )}
       </div>
     </button>
   )
