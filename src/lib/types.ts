@@ -9,7 +9,6 @@ export interface ScreenshotData {
   fileSize: number | null
   mimeType: string
   s3Key: string
-  thumbnailS3Key: string | null
   worldId: string | null
   world: { id: string; name: string; slug: string } | null
   tags: { id: string; name: string }[]

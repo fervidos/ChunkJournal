@@ -57,7 +57,6 @@ export async function POST(req: NextRequest) {
       filename,
       mimeType,
       s3Key,
-      thumbnailS3Key,
       width,
       height,
       fileSize: buffer.length,

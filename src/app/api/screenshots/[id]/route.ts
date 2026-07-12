@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { deleteFile } from '@/lib/s3'
+import { deleteFile, generateThumbnailS3Key } from '@/lib/s3'
 import { updateScreenshotSchema } from '@/lib/schema'
 import { requireAdmin } from '@/lib/auth'
 
@@ -92,19 +92,17 @@ export async function DELETE(
   const { id } = await params
   const screenshot = await prisma.screenshot.findUnique({
     where: { id },
-    select: { s3Key: true, thumbnailS3Key: true },
+    select: { s3Key: true },
   })
   if (!screenshot) {
     return Response.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const deleteOps = [deleteFile(screenshot.s3Key)]
-  if (screenshot.thumbnailS3Key) {
-    deleteOps.push(deleteFile(screenshot.thumbnailS3Key))
-  }
+  const thumbnailS3Key = generateThumbnailS3Key(screenshot.s3Key)
 
   await Promise.all([
-    ...deleteOps,
+    deleteFile(screenshot.s3Key),
+    deleteFile(thumbnailS3Key).catch(() => {}),
     prisma.screenshot.delete({ where: { id } }),
   ])
 

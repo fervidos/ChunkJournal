@@ -28,7 +28,6 @@ model Screenshot {
   fileSize        Int?
   mimeType        String   @default("image/png")
   s3Key           String   @unique
-  thumbnailS3Key  String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
