@@ -41,7 +41,7 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen">
+    <div className="flex-1 flex flex-col">
       <HeroShowcase
         initialScreenshots={screenshots}
         totalScreenshots={totalScreenshots}
