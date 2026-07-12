@@ -18,9 +18,20 @@ export default function Lightbox({ screenshots, index, worlds, onClose, onPrev, 
   const s = screenshots[index]
   if (!s) return null
 
+  // Preload adjacent images for smooth navigation
+  useEffect(() => {
+    const preload = (i: number) => {
+      if (i >= 0 && i < screenshots.length) {
+        const img = new Image()
+        img.src = `/api/screenshots/${screenshots[i].id}/download`
+      }
+    }
+    preload(index - 1)
+    preload(index + 1)
+  }, [index, screenshots])
+
   return (
     <LightboxInner
-      key={s.id + index}
       screenshot={s}
       worlds={worlds}
       hasPrev={index > 0}

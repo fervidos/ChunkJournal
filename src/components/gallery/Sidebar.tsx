@@ -27,19 +27,12 @@ export default function Sidebar({
 }: Props) {
   return (
     <aside className="w-60 flex-shrink-0 border-r border-[var(--color-border)] flex flex-col gap-6 p-5 overflow-y-auto opacity-0 animate-[fadeIn_0.5s_ease_0.1s_forwards]">
-      <div className="flex items-center justify-between">
+      <div>
         <h1 className="font-[family-name:var(--font-sans)] text-xl font-semibold tracking-tight">
           <Link href="/" className="hover:opacity-80 transition-opacity">
             <span className="text-[var(--color-accent)]">Chunk</span>Journal
           </Link>
         </h1>
-        <Link
-          href="/"
-          className="text-[0.625rem] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
-          aria-label="Back to home"
-        >
-          Home
-        </Link>
       </div>
 
       <div>

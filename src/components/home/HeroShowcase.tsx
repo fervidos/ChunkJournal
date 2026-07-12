@@ -129,8 +129,8 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
           Chunk by Chunk
           <span className="w-6 h-px bg-[var(--color-border)]" />
         </div>
-        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-white leading-[1.05]">
-          ChunkJournal
+        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-[1.05]">
+          <span className="text-[var(--color-accent)]">Chunk</span><span className="text-white">Journal</span>
         </h1>
         <p className="mt-5 text-base sm:text-lg text-[var(--color-text-dim)] leading-relaxed max-w-md mx-auto">
           A collection of the worlds I&apos;ve explored, the places I&apos;ve built, and the memories I&apos;ve made with the people I&apos;ve met along the way. Every screenshot tells a story I don&apos;t want to forget, and this is where I&apos;ve chosen to keep them.

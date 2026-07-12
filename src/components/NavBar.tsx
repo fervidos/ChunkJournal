@@ -2,10 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { getClientToken, clearClientToken } from '@/lib/auth'
 
 export default function NavBar() {
+  const pathname = usePathname()
   const [authed, setAuthed] = useState(false)
+
+  if (pathname === '/gallery') return null
 
   useEffect(() => {
     setAuthed(!!getClientToken())
