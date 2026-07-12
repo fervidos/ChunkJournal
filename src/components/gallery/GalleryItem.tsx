@@ -19,6 +19,7 @@ export default function GalleryItem({ screenshot, onSelect }: Props) {
       className="group relative aspect-[16/10] rounded-lg overflow-hidden bg-[var(--color-bg-card)] border border-[var(--color-border)] cursor-pointer transition-all duration-250 hover:border-[var(--color-accent)] hover:scale-[1.02] text-left"
     >
       <img
+        key={screenshot.id}
         src={imgSrc}
         alt={screenshot.title || screenshot.filename}
         loading="lazy"

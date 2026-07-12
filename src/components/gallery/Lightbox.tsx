@@ -22,11 +22,15 @@ export default function Lightbox({ screenshots, index, worlds, onClose, onPrev, 
   useEffect(() => {
     const preload = (i: number) => {
       if (i >= 0 && i < screenshots.length) {
-        const img = new Image()
-        img.src = `/api/screenshots/${screenshots[i].id}/download`
+        const thumb = new Image()
+        thumb.src = `/api/screenshots/${screenshots[i].id}/download?thumb=1`
+        const full = new Image()
+        full.src = `/api/screenshots/${screenshots[i].id}/download`
       }
     }
     preload(index - 1)
+    preload(index + 2)
+    preload(index - 2)
     preload(index + 1)
   }, [index, screenshots])
 
@@ -72,6 +76,7 @@ function LightboxInner({
   const dragRef = useRef({ startX: 0, startY: 0, panX: 0, panY: 0 })
   const [animating, setAnimating] = useState(false)
   const animRef = useRef<number | null>(null)
+  const [imageLoaded, setImageLoaded] = useState(false)
   const [editing, setEditing] = useState(false)
   const [editTitle, setEditTitle] = useState('')
   const [editDesc, setEditDesc] = useState('')
@@ -83,6 +88,11 @@ function LightboxInner({
   const authed = !!getClientToken()
 
   const imgSrc = `/api/screenshots/${screenshot.id}/download`
+
+  // Reset loaded state on navigation so old image doesn't linger
+  useEffect(() => {
+    setImageLoaded(false)
+  }, [screenshot.id])
 
   const resetView = useCallback(() => {
     if (animRef.current) { cancelAnimationFrame(animRef.current); animRef.current = null }
@@ -276,11 +286,18 @@ function LightboxInner({
           className="flex-1 min-w-0 flex items-center justify-center overflow-hidden bg-[#0d0d0d] relative"
         >
           <div ref={displayRef} className="relative inline-flex">
+            {!imageLoaded && (
+              <div className="flex items-center justify-center" style={{ width: '75vw', height: '80vh' }}>
+                <div className="w-6 h-6 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
             <img
+              key={screenshot.id}
               ref={imgRef}
               src={imgSrc}
               alt={screenshot.title || screenshot.filename}
               draggable={false}
+              onLoad={() => setImageLoaded(true)}
               onWheel={handleWheel}
               onMouseDown={handleMouseDown}
               onDoubleClick={handleDoubleClick}
@@ -290,6 +307,8 @@ function LightboxInner({
                 display: 'block',
                 cursor: isZoomed ? (dragging ? 'grabbing' : 'grab') : 'zoom-in',
                 userSelect: 'none',
+                opacity: imageLoaded ? 1 : 0,
+                transition: 'opacity 0.2s',
                 transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
               }}
             />
