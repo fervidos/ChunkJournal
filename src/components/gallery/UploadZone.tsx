@@ -1,7 +1,8 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import { getClientToken } from '@/lib/auth'
+import { saveDraft, loadDraft, clearDraft, hasDraft, storeBlob, type StorableFileEntry } from '@/lib/draft'
 import exifr from 'exifr'
 
 interface FileEntry {
@@ -13,6 +14,7 @@ interface FileEntry {
   tags: string
   worldId: string
   date: string
+  storageId: string
 }
 
 interface Props {
@@ -27,7 +29,74 @@ export default function UploadZone({ onClose, onUploaded, worlds }: Props) {
   const [files, setFiles] = useState<FileEntry[]>([])
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
+  const [restored, setRestored] = useState(false)
   const idCounter = useRef(0)
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
+  // Restore draft on mount
+  useEffect(() => {
+    if (hasDraft()) {
+      loadDraft().then(entries => {
+        if (entries && entries.length > 0) {
+          const mapped: FileEntry[] = entries.map(e => ({
+            id: ++idCounter.current,
+            file: e.file as File,
+            preview: e.preview,
+            title: e.title,
+            description: e.description,
+            tags: e.tags,
+            worldId: e.worldId,
+            date: e.date,
+            storageId: e.storageId,
+          }))
+          setFiles(mapped)
+          setRestored(true)
+          setTimeout(() => setRestored(false), 3000)
+        }
+      })
+    }
+  }, [])
+
+  // Debounced auto-save draft on files change
+  useEffect(() => {
+    if (saveTimer.current) clearTimeout(saveTimer.current)
+    saveTimer.current = setTimeout(() => {
+      if (files.length > 0) {
+        const storable: StorableFileEntry[] = files.map(f => ({
+          id: f.id,
+          file: { name: f.file.name, size: f.file.size, type: f.file.type, lastModified: f.file.lastModified },
+          preview: '',
+          title: f.title,
+          description: f.description,
+          tags: f.tags,
+          worldId: f.worldId,
+          date: f.date,
+          storageId: f.storageId,
+        }))
+        saveDraft(storable)
+      }
+    }, 800)
+    return () => { if (saveTimer.current) clearTimeout(saveTimer.current) }
+  }, [files])
+
+  const handleClose = useCallback(() => {
+    if (files.length > 0) {
+      const storable: StorableFileEntry[] = files.map(f => ({
+        id: f.id,
+        file: { name: f.file.name, size: f.file.size, type: f.file.type, lastModified: f.file.lastModified },
+        preview: '',
+        title: f.title,
+        description: f.description,
+        tags: f.tags,
+        worldId: f.worldId,
+        date: f.date,
+        storageId: f.storageId,
+      }))
+      saveDraft(storable).then(() => onClose())
+    } else {
+      onClose()
+    }
+  }, [files, onClose])
 
   async function addFiles(list: FileList | File[]) {
     const newEntries: FileEntry[] = []
@@ -47,6 +116,7 @@ export default function UploadZone({ onClose, onUploaded, worlds }: Props) {
       } catch {
         date = new Date(file.lastModified).toISOString().slice(0, 16)
       }
+      const storageId = crypto.randomUUID()
       newEntries.push({
         id: ++idCounter.current,
         file,
@@ -56,7 +126,12 @@ export default function UploadZone({ onClose, onUploaded, worlds }: Props) {
         tags: '',
         worldId: worlds.length === 1 ? worlds[0].id : '',
         date,
+        storageId,
       })
+    }
+    // Store file blobs in IndexedDB for draft recovery
+    for (const entry of newEntries) {
+      storeBlob(entry.storageId, entry.file)
     }
     setFiles(prev => [...prev, ...newEntries])
     setError('')
@@ -111,6 +186,7 @@ export default function UploadZone({ onClose, onUploaded, worlds }: Props) {
       if (failed.length > 0) {
         setError(`${failed.length} file(s) failed: ${failed[0].name}${failed[0].error ? ` (${failed[0].error})` : ''}`)
       } else {
+        await clearDraft()
         onUploaded()
       }
     } catch {
@@ -123,17 +199,22 @@ export default function UploadZone({ onClose, onUploaded, worlds }: Props) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
+      onMouseDown={(e) => { if (e.target === e.currentTarget) handleClose() }}
     >
       <div className="bg-[#1a1a1a] border border-[var(--color-border)] rounded-xl w-full max-w-2xl shadow-2xl scale-95 opacity-0 animate-[scaleIn_0.2s_ease_forwards] max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between p-6 pb-0">
           <h2 className="text-lg font-semibold tracking-tight">
             <span className="text-[var(--color-accent)]">Upload</span> screenshots
           </h2>
-          <button onClick={onClose} className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] text-lg">✕</button>
+          <button onClick={handleClose} className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] text-lg">✕</button>
         </div>
 
         <div className="p-6 pb-0">
+          {restored && (
+            <div className="mb-3 text-xs text-[var(--color-accent)] bg-[var(--color-accent)]/10 px-3 py-1.5 rounded-lg">
+              Draft restored — your previous session has been recovered
+            </div>
+          )}
           <div
             onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
             onDragLeave={() => setDragOver(false)}
@@ -206,7 +287,7 @@ export default function UploadZone({ onClose, onUploaded, worlds }: Props) {
                 <button onClick={uploadAll} disabled={uploading} className="text-xs px-4 py-1.5 rounded-lg bg-[var(--color-accent)] text-black font-medium hover:bg-[var(--color-accent-dim)] disabled:opacity-50 transition-colors">
                   {uploading ? 'Uploading...' : `Upload ${files.length} file${files.length > 1 ? 's' : ''}`}
                 </button>
-                <button onClick={() => { setFiles([]) }} className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors">
+                <button onClick={() => { clearDraft(); setFiles([]) }} className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors">
                   Clear
                 </button>
               </>
