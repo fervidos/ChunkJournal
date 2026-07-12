@@ -25,13 +25,13 @@ export default function GalleryItem({ screenshot, onSelect }: Props) {
         onLoad={() => setLoaded(true)}
         className={`w-full h-full object-cover block transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
       />
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-black/30 px-2.5 pt-6 pb-2 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 px-2.5 pb-2 pointer-events-none bg-gradient-to-t from-black/80 via-black/20 to-transparent pt-8" />
       <div className="absolute bottom-0 left-0 right-0 px-2.5 pb-2 pointer-events-none">
-        <div className="text-sm text-white/90 font-medium truncate">
+        <div className="text-sm text-white/90 font-medium truncate leading-tight">
           {screenshot.title || screenshot.filename}
         </div>
         {screenshot.description && (
-          <div className="text-xs text-white/50 truncate mt-px">
+          <div className="text-xs text-white/50 truncate leading-tight mt-px">
             {screenshot.description}
           </div>
         )}

@@ -68,7 +68,6 @@ export default function OpenGraphImage() {
               fontWeight: 800,
               letterSpacing: '-0.03em',
               color: '#e8e6e3',
-              fontFamily: 'system-ui, -apple-system, sans-serif',
               lineHeight: 1,
             }}
           >
@@ -83,7 +82,6 @@ export default function OpenGraphImage() {
               maxWidth: '600px',
               lineHeight: 1.5,
               fontWeight: 400,
-              fontFamily: 'system-ui, -apple-system, sans-serif',
             }}
           >
             A collection of the worlds I&apos;ve explored, the places I&apos;ve built, and the memories I&apos;ve made.
@@ -96,13 +94,11 @@ export default function OpenGraphImage() {
               gap: '8px',
               fontSize: '14px',
               color: '#555',
-              fontFamily: 'system-ui, -apple-system, sans-serif',
               letterSpacing: '0.15em',
-              textTransform: 'uppercase',
             }}
           >
             <span style={{ width: '32px', height: '1px', background: '#2a2a2a' }} />
-            Chunk by Chunk
+            CHUNK BY CHUNK
             <span style={{ width: '32px', height: '1px', background: '#2a2a2a' }} />
           </div>
         </div>
