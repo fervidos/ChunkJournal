@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://chunkjournal.vercel.app'
+
 interface Props {
   params: Promise<{ id: string }>
 }
@@ -15,6 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = screenshot.title || screenshot.filename
   const description = screenshot.description || 'A screenshot from ChunkJournal'
+  const imageUrl = `${siteUrl}/api/screenshots/${id}/download`
 
   return {
     title: `${title} — ChunkJournal`,
@@ -22,13 +26,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `${title} — ChunkJournal`,
       description,
-      images: [{ url: `/api/screenshots/${id}/download`, width: 1200, height: 630 }],
+      images: [{ url: imageUrl, width: 1200, height: 630 }],
     },
     twitter: {
       card: 'summary_large_image',
       title: `${title} — ChunkJournal`,
       description,
-      images: [`/api/screenshots/${id}/download`],
+      images: [imageUrl],
     },
   }
 }
