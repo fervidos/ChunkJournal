@@ -317,7 +317,8 @@ function LightboxInner({
         {/* Image / Panorama */}
         <div
           ref={wrapRef}
-          className={`flex-1 min-w-0 bg-[#0d0d0d] relative ${screenshot.panorama ? 'flex items-stretch' : 'flex items-center justify-center overflow-hidden'}`}
+          className={`flex-1 min-w-0 bg-[#0d0d0d] relative ${screenshot.panorama ? 'flex flex-col' : 'flex items-center justify-center overflow-hidden'}`}
+          style={screenshot.panorama ? { minHeight: '70vh', maxHeight: '92vh' } : undefined}
         >
           {screenshot.panorama ? (
             <PanoramaViewer imageUrl={imgSrc} />
