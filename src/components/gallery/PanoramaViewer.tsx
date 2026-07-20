@@ -12,7 +12,7 @@ function SphereScene({ imageUrl }: { imageUrl: string }) {
   return (
     <mesh>
       <sphereGeometry args={[500, 64, 64]} />
-      <meshBasicMaterial map={texture} side={THREE.BackSide} />
+      <meshBasicMaterial map={texture} side={THREE.BackSide} toneMapped={false} />
     </mesh>
   )
 }
@@ -48,7 +48,8 @@ function PanoramaControls() {
       Math.sin(phi) * Math.sin(theta),
     )
     camera.position.set(0, 0, 0)
-    camera.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, -1), dir)
+    camera.up.set(0, 1, 0)
+    camera.lookAt(dir)
   })
 
   useEffect(() => {
@@ -86,10 +87,20 @@ function PanoramaControls() {
       const dy = e.clientY - drag.current.y
       drag.current.x = e.clientX
       drag.current.y = e.clientY
-      drag.current.vx = dx * 0.1
-      drag.current.vy = dy * 0.1
-      lon.current -= dx * 0.1
-      lat.current = Math.max(-85, Math.min(85, lat.current + dy * 0.1))
+
+      // Degrees-per-pixel scales with the current FOV, so the point under
+      // the cursor tracks 1:1 with the drag at any zoom level — the same
+      // feel as Google Earth / Street View. A fixed multiplier here is why
+      // dragging felt off: zoomed in, it would spin too fast; zoomed out,
+      // too slow.
+      const degPerPx = fov.current / el.clientHeight
+      const dLon = -dx * degPerPx
+      const dLat = dy * degPerPx
+
+      drag.current.vx = dLon
+      drag.current.vy = dLat
+      lon.current += dLon
+      lat.current = Math.max(-85, Math.min(85, lat.current + dLat))
     }
 
     const onUp = (e: PointerEvent) => {
