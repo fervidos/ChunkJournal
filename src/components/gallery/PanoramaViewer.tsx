@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, Suspense, useState, useCallback } from 'react'
+import { useRef, Suspense, useState, useEffect } from 'react'
 import { Canvas, useLoader, useFrame, useThree } from '@react-three/fiber'
 import { TextureLoader } from 'three'
 import * as THREE from 'three'
@@ -17,12 +17,13 @@ function SphereScene({ imageUrl }: { imageUrl: string }) {
   )
 }
 
-function CameraController() {
+function PanoramaControls() {
   const { camera, gl } = useThree()
   const isDragging = useRef(false)
   const prev = useRef({ x: 0, y: 0 })
   const lon = useRef(0)
   const lat = useRef(0)
+  const fov = useRef(75)
 
   useFrame(() => {
     const target = new THREE.Vector3(
@@ -34,55 +35,61 @@ function CameraController() {
     camera.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, -1), target)
   })
 
-  const handlePointerDown = useCallback((e: { stopPropagation: () => void; clientX: number; clientY: number }) => {
-    e.stopPropagation()
-    gl.domElement.style.cursor = 'grabbing'
-    isDragging.current = true
-    prev.current = { x: e.clientX, y: e.clientY }
-  }, [gl])
+  useEffect(() => {
+    const canvas = gl.domElement
+    canvas.style.cursor = 'grab'
 
-  const handlePointerMove = useCallback((e: { clientX: number; clientY: number }) => {
-    if (!isDragging.current) return
-    const dx = e.clientX - prev.current.x
-    const dy = e.clientY - prev.current.y
-    lon.current -= dx * 0.3
-    lat.current = Math.max(-90, Math.min(90, lat.current + dy * 0.3))
-    prev.current = { x: e.clientX, y: e.clientY }
-  }, [])
+    const onPointerDown = (e: PointerEvent) => {
+      canvas.style.cursor = 'grabbing'
+      isDragging.current = true
+      prev.current = { x: e.clientX, y: e.clientY }
+      canvas.setPointerCapture(e.pointerId)
+    }
 
-  const handlePointerUp = useCallback(() => {
-    isDragging.current = false
-    gl.domElement.style.cursor = 'grab'
-  }, [gl])
+    const onPointerMove = (e: PointerEvent) => {
+      if (!isDragging.current) return
+      const dx = e.clientX - prev.current.x
+      const dy = e.clientY - prev.current.y
+      lon.current -= dx * 0.3
+      lat.current = Math.max(-90, Math.min(90, lat.current + dy * 0.3))
+      prev.current = { x: e.clientX, y: e.clientY }
+    }
 
-  const handleDoubleClick = useCallback(() => {
-    lon.current = 0
-    lat.current = 0
-  }, [])
+    const onPointerUp = () => {
+      isDragging.current = false
+      canvas.style.cursor = 'grab'
+    }
 
-  return (
-    <group
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerLeave={handlePointerUp}
-      onDoubleClick={handleDoubleClick}
-    />
-  )
-}
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      fov.current = Math.max(20, Math.min(120, fov.current + e.deltaY * 0.05))
+      ;(camera as THREE.PerspectiveCamera).fov = fov.current
+      ;(camera as THREE.PerspectiveCamera).updateProjectionMatrix()
+    }
 
-function ZoomHandler({ children }: { children: React.ReactNode }) {
-  const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera
-  const fovRef = useRef(75)
+    const onDoubleClick = () => {
+      lon.current = 0
+      lat.current = 0
+    }
 
-  const handleWheel = useCallback((e: { deltaY: number; stopPropagation: () => void }) => {
-    e.stopPropagation()
-    fovRef.current = Math.max(20, Math.min(120, fovRef.current + e.deltaY * 0.05))
-    camera.fov = fovRef.current
-    camera.updateProjectionMatrix()
-  }, [camera])
+    canvas.addEventListener('pointerdown', onPointerDown)
+    canvas.addEventListener('pointermove', onPointerMove)
+    canvas.addEventListener('pointerup', onPointerUp)
+    canvas.addEventListener('pointerleave', onPointerUp)
+    canvas.addEventListener('wheel', onWheel, { passive: false })
+    canvas.addEventListener('dblclick', onDoubleClick)
 
-  return <group onWheel={handleWheel}>{children}</group>
+    return () => {
+      canvas.removeEventListener('pointerdown', onPointerDown)
+      canvas.removeEventListener('pointermove', onPointerMove)
+      canvas.removeEventListener('pointerup', onPointerUp)
+      canvas.removeEventListener('pointerleave', onPointerUp)
+      canvas.removeEventListener('wheel', onWheel)
+      canvas.removeEventListener('dblclick', onDoubleClick)
+    }
+  }, [camera, gl])
+
+  return null
 }
 
 function LoadingSpinner() {
@@ -107,9 +114,7 @@ export default function PanoramaViewer({ imageUrl }: { imageUrl: string }) {
       >
         <Suspense fallback={null}>
           <SphereScene imageUrl={imageUrl} />
-          <ZoomHandler>
-            <CameraController />
-          </ZoomHandler>
+          <PanoramaControls />
         </Suspense>
       </Canvas>
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-sm text-xs text-white/70 pointer-events-none flex items-center gap-2">
