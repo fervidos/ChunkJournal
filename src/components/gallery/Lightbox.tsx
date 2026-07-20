@@ -287,7 +287,7 @@ function LightboxInner({
       onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       {/* Image / Panorama */}
-      <div className="flex-1 min-w-0 relative">
+      <div className="flex-1 min-w-0 relative overflow-hidden">
         {screenshot.panorama ? (
           <PanoramaViewer imageUrl={imgSrc} />
         ) : (
