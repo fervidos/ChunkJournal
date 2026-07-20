@@ -97,8 +97,10 @@ function PanoramaControls() {
 
       if (pointers.current.size === 1) {
         const p = pointers.current.values().next().value
-        drag.current = { active: true, x: p.x, y: p.y, vx: 0, vy: 0 }
-        el.style.cursor = 'grabbing'
+        if (p) {
+          drag.current = { active: true, x: p.x, y: p.y, vx: 0, vy: 0 }
+          el.style.cursor = 'grabbing'
+        }
         return
       }
 
