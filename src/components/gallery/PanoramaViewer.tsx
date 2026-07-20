@@ -103,20 +103,22 @@ export default function PanoramaViewer({ imageUrl }: { imageUrl: string }) {
   return (
     <div
       ref={wrapperRef}
-      className="w-full min-h-[60vh] relative overflow-hidden"
+      className="w-full h-full min-h-[60vh] relative overflow-hidden"
       style={{ touchAction: 'none' }}
     >
-      <Canvas
-        camera={{ fov: 75, near: 0.1, far: 1100 }}
-        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-        gl={{ antialias: true }}
-        onCreated={() => setLoaded(true)}
-      >
-        <Suspense fallback={null}>
-          <SphereScene imageUrl={imageUrl} />
-          <PanoramaControls />
-        </Suspense>
-      </Canvas>
+      <div className="absolute inset-0">
+        <Canvas
+          camera={{ fov: 75, near: 0.1, far: 1100 }}
+          style={{ width: '100%', height: '100%' }}
+          gl={{ antialias: true }}
+          onCreated={() => setLoaded(true)}
+        >
+          <Suspense fallback={null}>
+            <SphereScene imageUrl={imageUrl} />
+            <PanoramaControls />
+          </Suspense>
+        </Canvas>
+      </div>
       {!loaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-[#0d0d0d] z-10">
           <div className="w-6 h-6 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
