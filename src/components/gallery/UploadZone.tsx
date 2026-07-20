@@ -171,12 +171,12 @@ export default function UploadZone({ onClose, onUploaded, worlds }: Props) {
                 body: form,
               })
               if (!res.ok) {
-                const err = await res.json()
-                return { ok: false, name: entry.file.name, error: err.error?.message || 'Upload failed' }
+                const err = await res.json().catch(() => ({}))
+                return { ok: false, name: entry.file.name, error: err.error || `Server error (${res.status})` }
               }
               return { ok: true, name: entry.file.name }
-            } catch {
-              return { ok: false, name: entry.file.name, error: 'Upload failed' }
+            } catch (e) {
+              return { ok: false, name: entry.file.name, error: e instanceof Error ? e.message : 'Upload failed' }
             }
           })
         )

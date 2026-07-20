@@ -9,10 +9,20 @@ export async function POST(req: NextRequest) {
   const unauthorized = requireAdmin(req)
   if (unauthorized) return unauthorized
 
-  const formData = await req.formData()
+  let formData: FormData
+  try {
+    formData = await req.formData()
+  } catch {
+    return Response.json({ error: 'File too large. Maximum size is 50MB.' }, { status: 413 })
+  }
+
   const file = formData.get('file') as File | null
   if (!file) {
     return Response.json({ error: 'No file provided' }, { status: 400 })
+  }
+
+  if (file.size > 50 * 1024 * 1024) {
+    return Response.json({ error: 'File too large. Maximum size is 50MB.' }, { status: 413 })
   }
 
   const metadata = createScreenshotSchema.safeParse({
@@ -44,15 +54,24 @@ export async function POST(req: NextRequest) {
   const s3Key = generateS3Key('default', filename)
   const thumbnailS3Key = generateThumbnailS3Key(s3Key)
 
-  const thumbnailBuffer = await sharp(buffer)
-    .resize(400, undefined, { fit: 'inside', withoutEnlargement: true })
-    .webp({ quality: 80 })
-    .toBuffer()
+  let thumbnailBuffer: Buffer
+  try {
+    thumbnailBuffer = await sharp(buffer)
+      .resize(400, undefined, { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 80 })
+      .toBuffer()
+  } catch {
+    return Response.json({ error: 'Failed to process image. The file may be corrupted or unsupported.' }, { status: 422 })
+  }
 
-  await Promise.all([
-    uploadFile(s3Key, buffer, mimeType),
-    uploadFile(thumbnailS3Key, thumbnailBuffer, 'image/webp'),
-  ])
+  try {
+    await Promise.all([
+      uploadFile(s3Key, buffer, mimeType),
+      uploadFile(thumbnailS3Key, thumbnailBuffer, 'image/webp'),
+    ])
+  } catch {
+    return Response.json({ error: 'Failed to upload to storage. Please try again.' }, { status: 502 })
+  }
 
   const screenshot = await prisma.screenshot.create({
     data: {
