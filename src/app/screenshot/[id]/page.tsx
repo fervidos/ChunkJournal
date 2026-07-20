@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { getSignedDownloadUrl } from "@/lib/s3"
+import ScreenshotViewer from "@/components/screenshot/ScreenshotViewer"
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://chunkjournal.vercel.app'
 
@@ -13,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   const screenshot = await prisma.screenshot.findUnique({
     where: { id },
-    select: { title: true, description: true, filename: true, s3Key: true },
+    select: { title: true, description: true, filename: true, s3Key: true, panorama: true },
   })
   if (!screenshot) return {}
 
@@ -57,6 +58,8 @@ export default async function ScreenshotPage({ params }: Props) {
     createdAt: screenshot.createdAt.toISOString(),
   }
 
+  const imgSrc = `/api/screenshots/${id}/download`
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8">
       <div className="w-full max-w-5xl">
@@ -70,10 +73,10 @@ export default async function ScreenshotPage({ params }: Props) {
           Back to gallery
         </a>
         <div className="rounded-2xl overflow-hidden border border-[var(--color-border)] bg-[var(--color-bg-card)]">
-          <img
-            src={`/api/screenshots/${id}/download`}
+          <ScreenshotViewer
+            panorama={screenshot.panorama}
+            imageUrl={imgSrc}
             alt={data.title || data.filename}
-            className="w-full h-auto block"
           />
           <div className="p-6 flex flex-col gap-3">
             <h1 className="text-2xl font-bold text-[var(--color-text)]">{data.title || data.filename}</h1>

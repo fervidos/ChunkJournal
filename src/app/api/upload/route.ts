@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     const dims = await sharp(buffer).metadata()
     width = dims.width ?? null
     height = dims.height ?? null
-    panorama = width !== null && height !== null && Math.abs(width / height - 2) < 0.01
+    panorama = width !== null && height !== null && Math.abs(width / height - 2) < 0.05
   } catch {
     // fallback if sharp fails
   }

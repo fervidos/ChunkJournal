@@ -317,7 +317,7 @@ function LightboxInner({
         {/* Image / Panorama */}
         <div
           ref={wrapRef}
-          className="flex-1 min-w-0 flex items-center justify-center overflow-hidden bg-[#0d0d0d] relative"
+          className={`flex-1 min-w-0 bg-[#0d0d0d] relative ${screenshot.panorama ? 'flex items-stretch' : 'flex items-center justify-center overflow-hidden'}`}
         >
           {screenshot.panorama ? (
             <PanoramaViewer imageUrl={imgSrc} />
