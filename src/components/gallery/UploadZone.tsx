@@ -28,6 +28,7 @@ export default function UploadZone({ onClose, onUploaded, worlds }: Props) {
   const [dragOver, setDragOver] = useState(false)
   const [files, setFiles] = useState<FileEntry[]>([])
   const [uploading, setUploading] = useState(false)
+  const [progress, setProgress] = useState(0)
   const [error, setError] = useState('')
   const [restored, setRestored] = useState(false)
   const idCounter = useRef(0)
@@ -149,39 +150,58 @@ export default function UploadZone({ onClose, onUploaded, worlds }: Props) {
     const token = getClientToken()
     if (!token) return
     setUploading(true)
+    setProgress(0)
     setError('')
     try {
+      const totalBytes = files.reduce((sum, f) => sum + f.file.size, 0)
+      let loadedBytes = 0
+      const fileProgress = new Map<number, number>()
       const CONCURRENCY = 5
       const results: { ok: boolean; name: string; error?: string }[] = []
       for (let i = 0; i < files.length; i += CONCURRENCY) {
         const batch = files.slice(i, i + CONCURRENCY)
         const batchResults = await Promise.all(
-          batch.map(async (entry) => {
-            const form = new FormData()
-            form.set('file', entry.file)
-            form.set('title', entry.title)
-            form.set('description', entry.description)
-            form.set('date', entry.date)
-            form.set('tags', JSON.stringify(entry.tags.split(',').map(t => t.trim()).filter(Boolean)))
-            if (entry.worldId) form.set('worldId', entry.worldId)
-            try {
-              const res = await fetch('/api/upload', {
-                method: 'POST',
-                headers: { Authorization: `Bearer ${token}` },
-                body: form,
-              })
-              if (!res.ok) {
-                const err = await res.json().catch(() => ({}))
-                return { ok: false, name: entry.file.name, error: err.error || `Server error (${res.status})` }
+          batch.map((entry) => {
+            return new Promise<{ ok: boolean; name: string; error?: string }>((resolve) => {
+              const form = new FormData()
+              form.set('file', entry.file)
+              form.set('title', entry.title)
+              form.set('description', entry.description)
+              form.set('date', entry.date)
+              form.set('tags', JSON.stringify(entry.tags.split(',').map(t => t.trim()).filter(Boolean)))
+              if (entry.worldId) form.set('worldId', entry.worldId)
+              const xhr = new XMLHttpRequest()
+              xhr.open('POST', '/api/upload')
+              xhr.setRequestHeader('Authorization', `Bearer ${token}`)
+              xhr.upload.onprogress = (e) => {
+                if (e.lengthComputable) {
+                  const prev = fileProgress.get(entry.id) || 0
+                  const diff = e.loaded - prev
+                  fileProgress.set(entry.id, e.loaded)
+                  loadedBytes += diff
+                  setProgress(Math.min(Math.round((loadedBytes / totalBytes) * 100), 100))
+                }
               }
-              return { ok: true, name: entry.file.name }
-            } catch (e) {
-              return { ok: false, name: entry.file.name, error: e instanceof Error ? e.message : 'Upload failed' }
-            }
+              xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                  resolve({ ok: true, name: entry.file.name })
+                } else {
+                  try {
+                    const err = JSON.parse(xhr.responseText)
+                    resolve({ ok: false, name: entry.file.name, error: err.error || `Server error (${xhr.status})` })
+                  } catch {
+                    resolve({ ok: false, name: entry.file.name, error: `Server error (${xhr.status})` })
+                  }
+                }
+              }
+              xhr.onerror = () => resolve({ ok: false, name: entry.file.name, error: 'Upload failed' })
+              xhr.send(form)
+            })
           })
         )
         results.push(...batchResults)
       }
+      setProgress(100)
       const failed = results.filter(r => !r.ok)
       if (failed.length > 0) {
         setError(`${failed.length} file(s) failed: ${failed[0].name}${failed[0].error ? ` (${failed[0].error})` : ''}`)
@@ -279,19 +299,35 @@ export default function UploadZone({ onClose, onUploaded, worlds }: Props) {
           </div>
         )}
 
-        <div className="flex items-center justify-between p-6 pt-0 border-t border-[var(--color-border)] mt-4">
-          {error && <div className="text-xs text-red-400">{error}</div>}
-          <div className="flex gap-2 ml-auto">
-            {files.length > 0 && (
-              <>
-                <button onClick={uploadAll} disabled={uploading} className="text-xs px-4 py-1.5 rounded-lg bg-[var(--color-accent)] text-black font-medium hover:bg-[var(--color-accent-dim)] disabled:opacity-50 transition-colors">
-                  {uploading ? 'Uploading...' : `Upload ${files.length} file${files.length > 1 ? 's' : ''}`}
-                </button>
-                <button onClick={() => { clearDraft(); setFiles([]) }} className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors">
-                  Clear
-                </button>
-              </>
-            )}
+        <div className="p-6 pt-4 border-t border-[var(--color-border)] mt-4">
+          {uploading && (
+            <div className="mb-3">
+              <div className="flex items-center justify-between text-xs text-[var(--color-text-muted)] mb-1.5">
+                <span>Uploading…</span>
+                <span>{progress}%</span>
+              </div>
+              <div className="w-full h-2 bg-[var(--color-border)] rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[var(--color-accent)] rounded-full transition-[width] duration-200 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+          )}
+          <div className="flex items-center justify-between">
+            {error && <div className="text-xs text-red-400">{error}</div>}
+            <div className="flex gap-2 ml-auto">
+              {files.length > 0 && (
+                <>
+                  <button onClick={uploadAll} disabled={uploading} className="text-xs px-4 py-1.5 rounded-lg bg-[var(--color-accent)] text-black font-medium hover:bg-[var(--color-accent-dim)] disabled:opacity-50 transition-colors">
+                    {uploading ? 'Uploading…' : `Upload ${files.length} file${files.length > 1 ? 's' : ''}`}
+                  </button>
+                  <button onClick={() => { clearDraft(); setFiles([]) }} className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors">
+                    Clear
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
