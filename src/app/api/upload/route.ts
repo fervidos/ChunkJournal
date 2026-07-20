@@ -54,21 +54,23 @@ export async function POST(req: NextRequest) {
   const s3Key = generateS3Key('default', filename)
   const thumbnailS3Key = generateThumbnailS3Key(s3Key)
 
-  let thumbnailBuffer: Buffer
+  let thumbnailBuffer: Buffer | null = null
   try {
     thumbnailBuffer = await sharp(buffer)
       .resize(400, undefined, { fit: 'inside', withoutEnlargement: true })
       .webp({ quality: 80 })
       .toBuffer()
   } catch {
-    return Response.json({ error: 'Failed to process image. The file may be corrupted or unsupported.' }, { status: 422 })
+    // thumbnail generation is optional
+  }
+
+  const uploads = [uploadFile(s3Key, buffer, mimeType)]
+  if (thumbnailBuffer) {
+    uploads.push(uploadFile(thumbnailS3Key, thumbnailBuffer, 'image/webp'))
   }
 
   try {
-    await Promise.all([
-      uploadFile(s3Key, buffer, mimeType),
-      uploadFile(thumbnailS3Key, thumbnailBuffer, 'image/webp'),
-    ])
+    await Promise.all(uploads)
   } catch {
     return Response.json({ error: 'Failed to upload to storage. Please try again.' }, { status: 502 })
   }
