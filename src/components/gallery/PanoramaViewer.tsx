@@ -326,18 +326,6 @@ function PanoramaControls({ gyroEnabled }: { gyroEnabled: boolean }) {
 
     const onKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
-        case 'ArrowLeft':
-          lon.current -= KEY_PAN_STEP_DEG
-          break
-        case 'ArrowRight':
-          lon.current += KEY_PAN_STEP_DEG
-          break
-        case 'ArrowUp':
-          lat.current = THREE.MathUtils.clamp(lat.current + KEY_PAN_STEP_DEG, -LAT_CLAMP, LAT_CLAMP)
-          break
-        case 'ArrowDown':
-          lat.current = THREE.MathUtils.clamp(lat.current - KEY_PAN_STEP_DEG, -LAT_CLAMP, LAT_CLAMP)
-          break
         case '+':
         case '=':
           fov.current = THREE.MathUtils.clamp(fov.current - KEY_ZOOM_STEP, MIN_FOV, MAX_FOV)
@@ -559,7 +547,7 @@ export default function PanoramaViewer({ imageUrl }: { imageUrl: string }) {
         </svg>
         {gyroEnabled
           ? 'Move your device to look around'
-          : 'Drag to look around · Scroll to zoom · Arrow keys to pan · Double-click to reset'}
+          : 'Drag to look around · Scroll to zoom · Double-click to reset'}
       </div>
     </div>
   )

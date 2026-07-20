@@ -8,8 +8,29 @@ interface Props {
   onSelect: () => void
 }
 
+// Equirectangular (360°) photos are ~2:1. Our thumbnail box is 16:10 (1.6:1)
+// — narrower than the photo — so a plain `object-cover` scales to match box
+// height and crops the *sides*, which means it shows the full top-to-bottom
+// sweep (the heavily stretched sky/ceiling and ground/floor) and only trims
+// the least distorted part (the edges). That's backwards from what we want.
+//
+// For panorama thumbnails we instead force the image into a much wider
+// virtual aspect ratio than the box itself (2.4:1, `aspect-[12/5]` below).
+// That flips which axis gets cropped: object-cover now matches box width
+// and crops top/bottom, trimming the distorted poles and keeping the clean
+// horizon band across the full width. The outer tile size is untouched, so
+// grid layout is unaffected — only the image's own crop window changes.
+//
+// Note: the Tailwind class is written literally (not built from a
+// variable) — Tailwind's compiler only picks up class names it can see as
+// plain text in source, so an interpolated `aspect-[${x}]` would silently
+// fail to generate the CSS.
+const PANORAMA_IMG_CLASSES =
+  'absolute left-1/2 top-1/2 h-full w-auto -translate-x-1/2 -translate-y-1/2 aspect-[12/5]'
+
 export default function GalleryItem({ screenshot, onSelect }: Props) {
   const [loaded, setLoaded] = useState(false)
+  const isPanorama = Boolean(screenshot.panorama)
 
   const imgSrc = `/api/screenshots/${screenshot.id}/download?thumb=1`
 
@@ -24,7 +45,11 @@ export default function GalleryItem({ screenshot, onSelect }: Props) {
         alt={screenshot.title || screenshot.filename}
         loading="lazy"
         onLoad={() => setLoaded(true)}
-        className={`w-full h-full object-cover block transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        className={[
+          'block object-cover transition-opacity duration-300',
+          isPanorama ? PANORAMA_IMG_CLASSES : 'w-full h-full',
+          loaded ? 'opacity-100' : 'opacity-0',
+        ].join(' ')}
       />
       {screenshot.panorama && (
         <div className="absolute top-2 right-2 z-10 px-1.5 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-[0.625rem] font-medium text-white/90 flex items-center gap-1 pointer-events-none">
