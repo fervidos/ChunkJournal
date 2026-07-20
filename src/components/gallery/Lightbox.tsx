@@ -190,14 +190,17 @@ function LightboxInner({
   function handleWheel(e: React.WheelEvent) {
     if (!imgRef.current || !wrapRef.current) return
     e.preventDefault()
-    const rect = imgRef.current.getBoundingClientRect()
-    const wrapRect = wrapRef.current.getBoundingClientRect()
-    const mx = e.clientX - rect.left - rect.width / 2
-    const my = e.clientY - rect.top - rect.height / 2
     const oldZ = zoom
     const newZ = Math.max(1, Math.min(8, oldZ + (e.deltaY > 0 ? -0.4 : 0.4)))
     const roundedZ = Math.round(newZ * 10) / 10
     if (roundedZ === oldZ) return
+    if (roundedZ === 1) {
+      animateTo(1, 0, 0)
+      return
+    }
+    const rect = imgRef.current.getBoundingClientRect()
+    const mx = e.clientX - rect.left - rect.width / 2
+    const my = e.clientY - rect.top - rect.height / 2
     const newPanX = pan.x + mx - (roundedZ / oldZ) * mx
     const newPanY = pan.y + my - (roundedZ / oldZ) * my
     animateTo(roundedZ, newPanX, newPanY)
@@ -291,9 +294,9 @@ function LightboxInner({
         {screenshot.panorama ? (
           <PanoramaViewer imageUrl={imgSrc} />
         ) : (
-          <div ref={wrapRef} className="w-full h-full flex items-center justify-center">
+          <div ref={wrapRef} className="w-full h-full flex items-center justify-center relative">
             {!imageLoaded && (
-              <div className="flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-8 h-8 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
               </div>
             )}
