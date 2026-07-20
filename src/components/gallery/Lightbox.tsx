@@ -308,7 +308,7 @@ function LightboxInner({
               onMouseDown={handleMouseDown}
               onDoubleClick={handleDoubleClick}
               style={{
-                maxWidth: '100vw',
+                maxWidth: '100%',
                 maxHeight: '100vh',
                 display: 'block',
                 cursor: isZoomed ? (dragging ? 'grabbing' : 'grab') : 'zoom-in',
