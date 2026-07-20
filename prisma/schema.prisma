@@ -27,6 +27,7 @@ model Screenshot {
   height          Int?
   fileSize        Int?
   mimeType        String   @default("image/png")
+  panorama        Boolean  @default(false)
   s3Key           String   @unique
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

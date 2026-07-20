@@ -34,11 +34,13 @@ export const metadata: Metadata = {
     siteName: "ChunkJournal",
     locale: "en_US",
     type: "website",
+    images: [{ url: '/og-default.png', width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "ChunkJournal",
     description: "A collection of the worlds I've explored, the places I've built, and the memories I've made with the people I've met along the way.",
+    images: ['/og-default.png'],
   },
 }
 

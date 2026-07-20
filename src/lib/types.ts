@@ -8,6 +8,7 @@ export interface ScreenshotData {
   height: number | null
   fileSize: number | null
   mimeType: string
+  panorama: boolean
   s3Key: string
   worldId: string | null
   world: { id: string; name: string; slug: string } | null

@@ -3,6 +3,40 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { getClientToken } from '@/lib/auth'
 import type { ScreenshotData } from '@/lib/types'
+import PanoramaViewer from './PanoramaViewer'
+
+function ShareButton({ screenshotId }: { screenshotId: string }) {
+  const [copied, setCopied] = useState(false)
+
+  async function handleShare() {
+    const url = `${window.location.origin}/screenshot/${screenshotId}`
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // fallback
+    }
+  }
+
+  return (
+    <button
+      onClick={handleShare}
+      className="w-full text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] hover:border-[var(--color-text-muted)] transition-colors flex items-center justify-center gap-1.5"
+    >
+      {copied ? (
+        <>Copied!</>
+      ) : (
+        <>
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
+          </svg>
+          Share
+        </>
+      )}
+    </button>
+  )
+}
 
 interface Props {
   screenshots: ScreenshotData[]
@@ -280,47 +314,51 @@ function LightboxInner({
           </button>
         )}
 
-        {/* Image */}
+        {/* Image / Panorama */}
         <div
           ref={wrapRef}
           className="flex-1 min-w-0 flex items-center justify-center overflow-hidden bg-[#0d0d0d] relative"
         >
-          <div ref={displayRef} className="relative inline-flex">
-            {!imageLoaded && (
-              <div className="flex items-center justify-center" style={{ width: '75vw', height: '80vh' }}>
-                <div className="w-6 h-6 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
-              </div>
-            )}
-            <img
-              key={screenshot.id}
-              ref={imgRef}
-              src={imgSrc}
-              alt={screenshot.title || screenshot.filename}
-              draggable={false}
-              onLoad={() => setImageLoaded(true)}
-              onWheel={handleWheel}
-              onMouseDown={handleMouseDown}
-              onDoubleClick={handleDoubleClick}
-              style={{
-                maxWidth: '75vw',
-                maxHeight: '92vh',
-                display: 'block',
-                cursor: isZoomed ? (dragging ? 'grabbing' : 'grab') : 'zoom-in',
-                userSelect: 'none',
-                opacity: imageLoaded ? 1 : 0,
-                transition: 'opacity 0.2s',
-                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-              }}
-            />
-          </div>
-          {/* Zoom badge */}
-          {animating || isZoomed ? (
+          {screenshot.panorama ? (
+            <PanoramaViewer imageUrl={imgSrc} />
+          ) : (
+            <div ref={displayRef} className="relative inline-flex">
+              {!imageLoaded && (
+                <div className="flex items-center justify-center" style={{ width: '75vw', height: '80vh' }}>
+                  <div className="w-6 h-6 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
+              <img
+                key={screenshot.id}
+                ref={imgRef}
+                src={imgSrc}
+                alt={screenshot.title || screenshot.filename}
+                draggable={false}
+                onLoad={() => setImageLoaded(true)}
+                onWheel={handleWheel}
+                onMouseDown={handleMouseDown}
+                onDoubleClick={handleDoubleClick}
+                style={{
+                  maxWidth: '75vw',
+                  maxHeight: '92vh',
+                  display: 'block',
+                  cursor: isZoomed ? (dragging ? 'grabbing' : 'grab') : 'zoom-in',
+                  userSelect: 'none',
+                  opacity: imageLoaded ? 1 : 0,
+                  transition: 'opacity 0.2s',
+                  transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                }}
+              />
+            </div>
+          )}
+          {/* Zoom badge (non-panorama only) */}
+          {!screenshot.panorama && (animating || isZoomed) ? (
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-md bg-black/70 text-xs text-[#ccc] pointer-events-none transition-opacity duration-200">
               {Math.round(zoom * 100)}%
             </div>
           ) : null}
-          {/* Minimap */}
-          {isZoomed && viewport.w > 0 && screenshot.width && screenshot.height && (
+          {/* Minimap (non-panorama only) */}
+          {!screenshot.panorama && isZoomed && viewport.w > 0 && screenshot.width && screenshot.height && (
             <div className="absolute bottom-4 right-4 w-28 h-[4.5rem] rounded-md overflow-hidden border border-white/20 bg-black/70 shadow-lg pointer-events-none">
               <img src={imgSrc} className="w-full h-full object-contain opacity-40" alt="" />
               <div
@@ -398,8 +436,11 @@ function LightboxInner({
                 <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Description</label>
                 <div className="text-xs text-[var(--color-text-dim)] leading-relaxed">{screenshot.description || '—'}</div>
               </div>
+              <div className="pt-2 border-t border-[var(--color-border)]">
+                <ShareButton screenshotId={screenshot.id} />
+              </div>
               {authed && (
-                <div className="flex gap-2 pt-2 border-t border-[var(--color-border)]">
+                <div className="flex gap-2">
                   <button onClick={() => { setEditTitle(screenshot.title || ''); setEditDesc(screenshot.description || ''); setEditTags(screenshot.tags?.map(t => t.name).join(', ') || ''); setEditWorldId(screenshot.worldId || ''); setEditing(true) }} className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors">
                     Edit
                   </button>

@@ -10,6 +10,7 @@ export const updateScreenshotSchema = z.object({
   date: z.string().optional().nullable(),
   worldId: z.string().optional().nullable(),
   tags: z.array(z.string()).optional(),
+  panorama: z.boolean().optional(),
 })
 
 export const createScreenshotSchema = z.object({
@@ -18,4 +19,5 @@ export const createScreenshotSchema = z.object({
   date: z.string().optional().nullable(),
   worldId: z.string().optional().nullable(),
   tags: z.array(z.string()).optional(),
+  panorama: z.boolean().optional(),
 })

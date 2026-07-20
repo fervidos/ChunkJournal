@@ -30,11 +30,13 @@ export async function POST(req: NextRequest) {
 
   let width: number | null = null
   let height: number | null = null
+  let panorama = false
 
   try {
     const dims = await sharp(buffer).metadata()
     width = dims.width ?? null
     height = dims.height ?? null
+    panorama = width !== null && height !== null && Math.abs(width / height - 2) < 0.01
   } catch {
     // fallback if sharp fails
   }
@@ -56,6 +58,7 @@ export async function POST(req: NextRequest) {
     data: {
       filename,
       mimeType,
+      panorama,
       s3Key,
       width,
       height,

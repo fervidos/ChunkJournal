@@ -44,6 +44,7 @@ export async function GET(req: NextRequest) {
     tags: s.tags.map((st) => st.tag),
     date: s.date.toISOString(),
     createdAt: s.createdAt.toISOString(),
+    panorama: s.panorama,
   }))
 
   return Response.json({ data, total: data.length })
