@@ -153,16 +153,11 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
         <Lightbox
           screenshots={screenshots}
           index={lightboxIndex}
-          worlds={worlds}
           onClose={() => setLightboxIndex(null)}
           onPrev={() => setLightboxIndex(Math.max(0, lightboxIndex - 1))}
           onNext={() =>
             setLightboxIndex(Math.min(screenshots.length - 1, lightboxIndex + 1))
           }
-          onMutated={() => {
-            fetchScreenshots()
-            refreshTags()
-          }}
         />
       )}
 
