@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
+import { getSignedDownloadUrl } from "@/lib/s3"
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://chunkjournal.vercel.app'
 
@@ -12,13 +13,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   const screenshot = await prisma.screenshot.findUnique({
     where: { id },
-    select: { title: true, description: true, filename: true },
+    select: { title: true, description: true, filename: true, s3Key: true },
   })
   if (!screenshot) return {}
 
   const title = screenshot.title || screenshot.filename
   const description = screenshot.description || 'A screenshot from ChunkJournal'
-  const imageUrl = `${siteUrl}/api/screenshots/${id}/download`
+  const s3Url = await getSignedDownloadUrl(screenshot.s3Key)
+  const imageUrl = s3Url || `${siteUrl}/api/screenshots/${id}/download`
 
   return {
     title: `${title} — ChunkJournal`,
