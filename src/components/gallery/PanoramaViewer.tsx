@@ -89,14 +89,26 @@ function LoadingSpinner() {
 }
 
 export default function PanoramaViewer({ imageUrl }: { imageUrl: string }) {
+  const wrapperRef = useRef<HTMLDivElement>(null)
   const [loaded, setLoaded] = useState(false)
 
+  useEffect(() => {
+    const el = wrapperRef.current
+    if (!el) return
+    const handler = (e: WheelEvent) => { e.preventDefault() }
+    el.addEventListener('wheel', handler, { passive: false })
+    return () => el.removeEventListener('wheel', handler)
+  }, [])
+
   return (
-    <div className="w-full h-full min-h-[60vh] relative" style={{ touchAction: 'none' }}>
-      {!loaded && <LoadingSpinner />}
+    <div
+      ref={wrapperRef}
+      className="w-full min-h-[60vh] relative overflow-hidden"
+      style={{ touchAction: 'none' }}
+    >
       <Canvas
         camera={{ fov: 75, near: 0.1, far: 1100 }}
-        style={{ width: '100%', height: '100%', cursor: 'grab' }}
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
         gl={{ antialias: true }}
         onCreated={() => setLoaded(true)}
       >
@@ -105,7 +117,12 @@ export default function PanoramaViewer({ imageUrl }: { imageUrl: string }) {
           <PanoramaControls />
         </Suspense>
       </Canvas>
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-sm text-xs text-white/70 pointer-events-none flex items-center gap-2">
+      {!loaded && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[#0d0d0d] z-10">
+          <div className="w-6 h-6 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-sm text-xs text-white/70 pointer-events-none flex items-center gap-2 z-10">
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm0 8.625a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25ZM15.375 12a1.125 1.125 0 1 0 2.25 0 1.125 1.125 0 0 0-2.25 0ZM7.5 12a1.125 1.125 0 1 0 2.25 0A1.125 1.125 0 0 0 7.5 12Z" />
         </svg>
