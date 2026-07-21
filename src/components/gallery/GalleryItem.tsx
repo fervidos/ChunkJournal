@@ -8,18 +8,15 @@ interface Props {
   onSelect: () => void
 }
 
-// Equirectangular (360°) photos are ~2:1. Our thumbnail box is 16:10 (1.6:1)
-// — narrower than the photo — so a plain `object-cover` scales to match box
-// height and crops the *sides*, which means it shows the full top-to-bottom
-// sweep (the heavily stretched sky/ceiling and ground/floor) and only trims
-// the least distorted part (the edges). That's backwards from what we want.
+// Newly uploaded panoramas get a thumbnail cropped to the centre 50 % of
+// the equirectangular height (see upload route), yielding a ~4:1 image
+// that already excludes the stretched poles.  The 2.4:1 aspect ratio
+// below makes object-cover crop the sides instead, showing the centre
+// front-facing band of the panorama.
 //
-// For panorama thumbnails we instead force the image into a much wider
-// virtual aspect ratio than the box itself (2.4:1, `aspect-[12/5]` below).
-// That flips which axis gets cropped: object-cover now matches box width
-// and crops top/bottom, trimming the distorted poles and keeping the clean
-// horizon band across the full width. The outer tile size is untouched, so
-// grid layout is unaffected — only the image's own crop window changes.
+// For older uploads whose thumbnail is the full 2:1 equirectangular,
+// the same CSS crops top / bottom (poles) instead — still better than
+// the default w-full h-full.
 //
 // Note: the Tailwind class is written literally (not built from a
 // variable) — Tailwind's compiler only picks up class names it can see as

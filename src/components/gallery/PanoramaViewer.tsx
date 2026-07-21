@@ -91,7 +91,7 @@ function SphereScene({
   if (!texture) return null
 
   return (
-    <mesh>
+    <mesh scale={[-1, 1, 1]}>
       <sphereGeometry args={[SPHERE_RADIUS, SPHERE_WIDTH_SEGMENTS, SPHERE_HEIGHT_SEGMENTS]} />
       <meshBasicMaterial map={texture} side={THREE.BackSide} toneMapped={false} />
     </mesh>

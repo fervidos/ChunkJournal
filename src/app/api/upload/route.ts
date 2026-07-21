@@ -56,7 +56,18 @@ export async function POST(req: NextRequest) {
 
   let thumbnailBuffer: Buffer | null = null
   try {
-    thumbnailBuffer = await sharp(buffer)
+    let pipeline = sharp(buffer)
+
+    // For equirectangular panoramas the poles (top / bottom of the image)
+    // are heavily stretched.  Cropping to the centre 50% of the height
+    // removes the worst distortion and gives a sensible horizon thumbnail.
+    if (panorama && width && height) {
+      const cropHeight = Math.round(height * 0.5)
+      const cropTop = Math.round((height - cropHeight) / 2)
+      pipeline = pipeline.extract({ left: 0, top: cropTop, width, height: cropHeight })
+    }
+
+    thumbnailBuffer = await pipeline
       .resize(400, undefined, { fit: 'inside', withoutEnlargement: true })
       .webp({ quality: 80 })
       .toBuffer()
