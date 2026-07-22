@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
   let panorama = false
 
   try {
-    const dims = await sharp(buffer).metadata()
+    const dims = await sharp(buffer, { limitInputPixels: false }).metadata()
     width = dims.width ?? null
     height = dims.height ?? null
     panorama = width !== null && height !== null && Math.abs(width / height - 2) < 0.05
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
 
   let thumbnailBuffer: Buffer | null = null
   try {
-    let pipeline = sharp(buffer)
+    let pipeline = sharp(buffer, { limitInputPixels: false })
 
     // For equirectangular panoramas the poles (top / bottom of the image)
     // are heavily stretched.  Cropping to the centre 50% of the height
