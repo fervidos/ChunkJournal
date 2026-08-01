@@ -48,25 +48,48 @@ interface Props {
   onMutated: () => void
 }
 
+// Mobile lightbox images are capped at 2400px wide so phones don't download
+// the full-res original; desktops keep full quality for deep zooming.
+const MOBILE_IMAGE_WIDTH = 2400
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1023px)')
+    const update = () => setIsMobile(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+  return isMobile
+}
+
 export default function Lightbox({ screenshots, index, worlds, onClose, onPrev, onNext, onMutated }: Props) {
   const s = screenshots[index]
+  const isMobile = useIsMobile()
   if (!s) return null
 
-  // Preload adjacent images for smooth navigation
+  // Preload adjacent images for smooth navigation. On mobile preload a single
+  // width-capped image instead of both a thumbnail and the full-res original.
   useEffect(() => {
     const preload = (i: number) => {
       if (i >= 0 && i < screenshots.length) {
-        const thumb = new Image()
-        thumb.src = `/api/screenshots/${screenshots[i].id}/download?thumb=1`
-        const full = new Image()
-        full.src = `/api/screenshots/${screenshots[i].id}/download`
+        if (isMobile) {
+          const cap = new Image()
+          cap.src = `/api/screenshots/${screenshots[i].id}/download?width=${MOBILE_IMAGE_WIDTH}`
+        } else {
+          const thumb = new Image()
+          thumb.src = `/api/screenshots/${screenshots[i].id}/download?thumb=1`
+          const full = new Image()
+          full.src = `/api/screenshots/${screenshots[i].id}/download`
+        }
       }
     }
     preload(index - 1)
     preload(index + 2)
     preload(index - 2)
     preload(index + 1)
-  }, [index, screenshots])
+  }, [index, screenshots, isMobile])
 
   return (
     <LightboxInner
@@ -74,6 +97,7 @@ export default function Lightbox({ screenshots, index, worlds, onClose, onPrev, 
       worlds={worlds}
       hasPrev={index > 0}
       hasNext={index < screenshots.length - 1}
+      isMobile={isMobile}
       onClose={onClose}
       onPrev={onPrev}
       onNext={onNext}
@@ -87,6 +111,7 @@ function LightboxInner({
   worlds,
   hasPrev,
   hasNext,
+  isMobile,
   onClose,
   onPrev,
   onNext,
@@ -96,6 +121,7 @@ function LightboxInner({
   worlds: { id: string; name: string; slug: string }[]
   hasPrev: boolean
   hasNext: boolean
+  isMobile: boolean
   onClose: () => void
   onPrev: () => void
   onNext: () => void
@@ -121,7 +147,7 @@ function LightboxInner({
   const [showMobileInfo, setShowMobileInfo] = useState(false)
   const authed = !!getClientToken()
 
-  const imgSrc = `/api/screenshots/${screenshot.id}/download`
+  const imgSrc = `/api/screenshots/${screenshot.id}/download${isMobile ? `?width=${MOBILE_IMAGE_WIDTH}` : ''}`
 
   // Reset loaded state on navigation so old image doesn't linger
   useEffect(() => {
@@ -457,7 +483,7 @@ function LightboxInner({
       {/* Image / Panorama */}
       <div className="flex-1 min-w-0 relative overflow-hidden">
         {screenshot.panorama ? (
-          <PanoramaViewer imageUrl={imgSrc} />
+          <PanoramaViewer imageUrl={imgSrc} onClose={onClose} />
         ) : (
           <div ref={wrapRef} className="w-full h-full flex items-center justify-center relative" style={{ touchAction: 'none' }}>
             {!imageLoaded && (
@@ -513,12 +539,14 @@ function LightboxInner({
       </div>
 
       {/* Overlay controls */}
-      <button
-        onClick={onClose}
-        className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 text-white/70 hover:bg-white/10 hover:text-white transition-colors text-xl"
-      >
-        ✕
-      </button>
+      {!screenshot.panorama && (
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 text-white/70 hover:bg-white/10 hover:text-white transition-colors text-xl"
+        >
+          ✕
+        </button>
+      )}
       {hasPrev && (
         <button
           onClick={onPrev}
@@ -554,7 +582,7 @@ function LightboxInner({
 
       {/* Mobile details bottom sheet */}
       {showMobileInfo && (
-        <div className="lg:hidden absolute inset-x-0 bottom-0 z-40 max-h-[75dvh] overflow-y-auto rounded-t-2xl bg-[#141414] border-t border-[var(--color-border)] shadow-2xl">
+        <div className="lg:hidden absolute inset-x-0 bottom-0 z-40 max-h-[75dvh] overflow-y-auto rounded-t-2xl bg-[#141414] border-t border-[var(--color-border)] shadow-2xl pb-[env(safe-area-inset-bottom)]">
           <div className="sticky top-0 z-10 bg-[#141414] flex items-center justify-between px-5 py-3 border-b border-[var(--color-border)]">
             <span className="text-xs font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Details</span>
             <button onClick={() => setShowMobileInfo(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors" aria-label="Close details">

@@ -81,7 +81,7 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
         />
       )}
       <div
-        className={`fixed inset-y-0 left-0 z-40 w-[80vw] max-w-[300px] flex-shrink-0 shadow-2xl transition-transform duration-300 ease-out lg:static lg:z-auto lg:w-60 lg:max-w-none lg:translate-x-0 lg:shadow-none ${
+        className={`fixed inset-y-0 left-0 z-40 w-[80vw] max-w-[300px] flex-shrink-0 shadow-2xl transition-transform duration-300 ease-out lg:static lg:z-auto lg:w-60 lg:max-w-none lg:translate-x-0 lg:shadow-none pt-[env(safe-area-inset-top)] lg:pt-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -125,8 +125,10 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
               <strong className="font-medium text-[var(--color-text)]">
                 {activeWorld || 'All worlds'}
               </strong>
-              {' '}&middot;{' '}
-              {loading ? '...' : `${total} screenshots`}
+              <span className="hidden sm:inline">
+                {' '}&middot;{' '}
+                {loading ? '...' : `${total} screenshots`}
+              </span>
             </h2>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -136,7 +138,7 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
                 setSort(e.target.value)
                 fetchScreenshots({ sort: e.target.value })
               }}
-              className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-dim)] outline-none cursor-pointer flex-shrink-0"
+              className="text-xs px-3 py-2 sm:py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-dim)] outline-none cursor-pointer flex-shrink-0"
             >
               <option value="newest">Newest</option>
               <option value="oldest">Oldest</option>
@@ -146,7 +148,7 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
               <>
                 <button
                   onClick={() => setShowUpload(true)}
-                  className="text-xs px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-black font-medium hover:bg-[var(--color-accent-dim)] transition-colors flex-shrink-0"
+                  className="text-xs px-3 py-2 sm:py-1.5 rounded-lg bg-[var(--color-accent)] text-black font-medium hover:bg-[var(--color-accent-dim)] transition-colors flex-shrink-0"
                 >
                   + Upload
                 </button>
@@ -160,7 +162,7 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
             ) : (
               <Link
                 href="/login"
-                className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-accent)] text-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 transition-colors flex-shrink-0"
+                className="text-xs px-3 py-2 sm:py-1.5 rounded-lg border border-[var(--color-accent)] text-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 transition-colors flex-shrink-0"
               >
                 Login
               </Link>

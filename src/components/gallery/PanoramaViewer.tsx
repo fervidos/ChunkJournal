@@ -397,7 +397,13 @@ function ErrorOverlay({ message, onRetry }: { message: string; onRetry: () => vo
   )
 }
 
-export default function PanoramaViewer({ imageUrl }: { imageUrl: string }) {
+export default function PanoramaViewer({
+  imageUrl,
+  onClose,
+}: {
+  imageUrl: string
+  onClose?: () => void
+}) {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const [status, setStatus] = useState<'loading' | 'loaded' | 'error'>('loading')
   const [progress, setProgress] = useState<number | null>(null)
@@ -406,6 +412,11 @@ export default function PanoramaViewer({ imageUrl }: { imageUrl: string }) {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [gyroSupported, setGyroSupported] = useState(false)
   const [gyroEnabled, setGyroEnabled] = useState(false)
+
+  // Full-res equirectangular uploads can exceed the browser's max decodable
+  // size (~16384px), which silently fails texture loading. Always request the
+  // downscaled preview from the download route.
+  const textureUrl = imageUrl.includes('?') ? `${imageUrl}&preview=1` : `${imageUrl}?preview=1`
 
   useEffect(() => {
     setStatus('loading')
@@ -472,7 +483,7 @@ export default function PanoramaViewer({ imageUrl }: { imageUrl: string }) {
           dpr={[1, 2]}
         >
           <SphereScene
-            imageUrl={imageUrl}
+            imageUrl={textureUrl}
             reloadToken={retryKey}
             onProgress={setProgress}
             onLoaded={() => setStatus('loaded')}
@@ -491,6 +502,17 @@ export default function PanoramaViewer({ imageUrl }: { imageUrl: string }) {
       )}
 
       <div className="absolute top-4 right-4 flex gap-2 z-10">
+        {onClose && (
+          <button
+            onClick={onClose}
+            aria-label="Close panorama"
+            className="p-2 rounded-lg bg-black/60 backdrop-blur-sm text-white/70 hover:text-white transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
         {gyroSupported && (
           <button
             onClick={() => (gyroEnabled ? setGyroEnabled(false) : enableGyro())}

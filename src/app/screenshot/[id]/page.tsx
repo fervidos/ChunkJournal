@@ -58,7 +58,9 @@ export default async function ScreenshotPage({ params }: Props) {
     createdAt: screenshot.createdAt.toISOString(),
   }
 
-  const imgSrc = `/api/screenshots/${id}/download`
+  // 2400px webp is crisp at any container width up to 5xl while keeping mobile
+  // data usage sane (panoramas go through their own preview downscale).
+  const imgSrc = `/api/screenshots/${id}/download?width=2400`
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8">

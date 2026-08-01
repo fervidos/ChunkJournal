@@ -31,13 +31,17 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
 
   const n = screenshots.length
 
+  // Hero images never need the full-res original — a 1600px webp keeps them
+  // crisp at any breakpoint while slashing mobile data usage.
+  const imgSrc = (id: string) => `/api/screenshots/${id}/download?width=1600`
+
   // Warm up the first few images on mount
   useEffect(() => {
     screenshots.slice(0, 5).forEach((s, i) => {
       const img = new Image()
       img.onload = () => setReady(prev => new Set(prev).add(i))
       img.onerror = () => setReady(prev => new Set(prev).add(i))
-      img.src = `/api/screenshots/${s.id}/download`
+      img.src = imgSrc(s.id)
     })
   }, [screenshots])
 
@@ -54,7 +58,7 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
     img.onerror = () => {
       setReady(prev => new Set(prev).add(nextIdx))
     }
-    img.src = `/api/screenshots/${screenshots[nextIdx].id}/download`
+    img.src = imgSrc(screenshots[nextIdx].id)
   }, [current, n, ready, screenshots])
 
   // Auto-advance timer
@@ -149,7 +153,7 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
       </div>
 
       {/* Showcase */}
-      <div className="relative w-full max-w-5xl aspect-[16/9] rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-2xl shadow-black/50 bg-[var(--color-bg-card)]">
+      <div className="relative w-full max-w-5xl aspect-[3/2] sm:aspect-[16/9] rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-2xl shadow-black/50 bg-[var(--color-bg-card)]">
         {/* Shimmer placeholder behind everything */}
         {!loaded && (
           <div className="absolute inset-0 animate-pulse bg-[var(--color-bg-hover)]" />
@@ -159,7 +163,7 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
         {nextS && (
           <img
             key={`in-${fadingTo}`}
-            src={`/api/screenshots/${nextS.id}/download`}
+            src={imgSrc(nextS.id)}
             alt=""
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-600 ${transitioning ? 'opacity-100' : 'opacity-0'}`}
           />
@@ -168,7 +172,7 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
         {/* Current image */}
         <img
           key={`cur-${current}`}
-          src={`/api/screenshots/${s.id}/download`}
+          src={imgSrc(s.id)}
           alt={s.title || s.filename}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-600 ${transitioning ? 'opacity-0' : 'opacity-100'}`}
         />
