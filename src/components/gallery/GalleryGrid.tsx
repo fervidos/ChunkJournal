@@ -12,7 +12,7 @@ interface Props {
 export default function GalleryGrid({ screenshots, loading, onSelect }: Props) {
   if (loading) {
     return (
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3">
         {Array.from({ length: 12 }).map((_, i) => (
           <div
             key={i}
@@ -41,7 +41,7 @@ export default function GalleryGrid({ screenshots, loading, onSelect }: Props) {
   }
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 opacity-0 animate-[fadeIn_0.5s_ease_0.2s_forwards]">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3 opacity-0 animate-[fadeIn_0.5s_ease_0.2s_forwards]">
       {screenshots.map((s, i) => (
         <GalleryItem key={s.id} screenshot={s} onSelect={() => onSelect(i)} />
       ))}

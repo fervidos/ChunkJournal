@@ -21,6 +21,7 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
   const [tags, setTags] = useState(initialTags)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const [showUpload, setShowUpload] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeWorld, setActiveWorld] = useState<string | null>(null)
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [search, setSearch] = useState('')
@@ -72,44 +73,70 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
   }, [fetchScreenshots])
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden">
-      <Sidebar
-        worlds={worlds}
-        tags={tags}
-        activeWorld={activeWorld}
-        activeTag={activeTag}
-        search={search}
-        total={total}
-        onWorldChange={(slug) => {
-          setActiveWorld(slug)
-          fetchScreenshots({ world: slug })
-        }}
-        onTagChange={(name) => {
-          setActiveTag(name)
-          fetchScreenshots({ tag: name })
-        }}
-        onSearchChange={(q) => {
-          setSearch(q)
-          fetchScreenshots({ search: q })
-        }}
-      />
+    <div className="flex h-dvh w-full overflow-hidden">
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      <div
+        className={`fixed inset-y-0 left-0 z-40 w-[80vw] max-w-[300px] flex-shrink-0 shadow-2xl transition-transform duration-300 ease-out lg:static lg:z-auto lg:w-60 lg:max-w-none lg:translate-x-0 lg:shadow-none ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <Sidebar
+          worlds={worlds}
+          tags={tags}
+          activeWorld={activeWorld}
+          activeTag={activeTag}
+          search={search}
+          total={total}
+          onClose={() => setSidebarOpen(false)}
+          onWorldChange={(slug) => {
+            setActiveWorld(slug)
+            setSidebarOpen(false)
+            fetchScreenshots({ world: slug })
+          }}
+          onTagChange={(name) => {
+            setActiveTag(name)
+            setSidebarOpen(false)
+            fetchScreenshots({ tag: name })
+          }}
+          onSearchChange={(q) => {
+            setSearch(q)
+            fetchScreenshots({ search: q })
+          }}
+        />
+      </div>
       <main className="flex-1 flex flex-col min-w-0">
-        <div className="flex items-center justify-between px-6 py-3 border-b border-[var(--color-border)]">
-          <h2 className="text-sm text-[var(--color-text-dim)]">
-            <strong className="font-medium text-[var(--color-text)]">
-              {activeWorld || 'All worlds'}
-            </strong>
-            {' '}&middot;{' '}
-            {loading ? '...' : `${total} screenshots`}
-          </h2>
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-2 px-3 sm:px-6 py-2 sm:py-3 border-b border-[var(--color-border)]">
+          <div className="flex items-center gap-2 min-w-0">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors"
+              aria-label="Open filters"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
+            </button>
+            <h2 className="text-sm text-[var(--color-text-dim)] truncate">
+              <strong className="font-medium text-[var(--color-text)]">
+                {activeWorld || 'All worlds'}
+              </strong>
+              {' '}&middot;{' '}
+              {loading ? '...' : `${total} screenshots`}
+            </h2>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
             <select
               value={sort}
               onChange={(e) => {
                 setSort(e.target.value)
                 fetchScreenshots({ sort: e.target.value })
               }}
-              className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-dim)] outline-none cursor-pointer"
+              className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-dim)] outline-none cursor-pointer flex-shrink-0"
             >
               <option value="newest">Newest</option>
               <option value="oldest">Oldest</option>
@@ -119,13 +146,13 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
               <>
                 <button
                   onClick={() => setShowUpload(true)}
-                  className="text-xs px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-black font-medium hover:bg-[var(--color-accent-dim)] transition-colors"
+                  className="text-xs px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-black font-medium hover:bg-[var(--color-accent-dim)] transition-colors flex-shrink-0"
                 >
                   + Upload
                 </button>
                 <button
                   onClick={() => { clearClientToken(); setAuthed(false) }}
-                  className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors"
+                  className="hidden sm:inline-flex text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors"
                 >
                   Logout
                 </button>
@@ -133,14 +160,14 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
             ) : (
               <Link
                 href="/login"
-                className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-accent)] text-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 transition-colors"
+                className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-accent)] text-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 transition-colors flex-shrink-0"
               >
                 Login
               </Link>
             )}
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6">
           <GalleryGrid
             screenshots={screenshots}
             loading={loading}

@@ -118,6 +118,7 @@ function LightboxInner({
   const [saving, setSaving] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [viewport, setViewport] = useState({ w: 0, h: 0 })
+  const [showMobileInfo, setShowMobileInfo] = useState(false)
   const authed = !!getClientToken()
 
   const imgSrc = `/api/screenshots/${screenshot.id}/download`
@@ -125,6 +126,7 @@ function LightboxInner({
   // Reset loaded state on navigation so old image doesn't linger
   useEffect(() => {
     setImageLoaded(false)
+    setShowMobileInfo(false)
   }, [screenshot.id])
 
   const resetView = useCallback(() => {
@@ -253,6 +255,80 @@ function LightboxInner({
     }
   }, [dragging])
 
+  // Touch gestures: swipe to navigate, double-tap to zoom, drag to pan when
+  // zoomed. Handlers are attached natively (with a non-passive touchmove) so
+  // preventDefault actually works on mobile.
+  const touchActions = useRef({ hasNext, hasPrev, onNext, onPrev, resetView, animateTo })
+  const zoomRef = useRef(1)
+  const panRef = useRef({ x: 0, y: 0 })
+
+  useEffect(() => {
+    touchActions.current = { hasNext, hasPrev, onNext, onPrev, resetView, animateTo }
+    zoomRef.current = zoom
+    panRef.current = pan
+  })
+
+  useEffect(() => {
+    const el = wrapRef.current
+    if (!el) return
+    let touch: { x: number; y: number; panX: number; panY: number; t: number } | null = null
+    let lastTap = 0
+
+    function onTouchStart(e: TouchEvent) {
+      if (e.touches.length !== 1) { touch = null; return }
+      const t = e.touches[0]
+      touch = { x: t.clientX, y: t.clientY, panX: panRef.current.x, panY: panRef.current.y, t: Date.now() }
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      if (!touch || e.touches.length !== 1 || zoomRef.current <= 1) return
+      e.preventDefault()
+      const t = e.touches[0]
+      setPan({ x: touch.panX + (t.clientX - touch.x), y: touch.panY + (t.clientY - touch.y) })
+    }
+
+    function onTouchEnd(e: TouchEvent) {
+      if (!touch) return
+      const t = e.changedTouches[0]
+      const dx = t.clientX - touch.x
+      const dy = t.clientY - touch.y
+      const dt = Date.now() - touch.t
+      const wasTap = Math.abs(dx) < 10 && Math.abs(dy) < 10 && dt < 250
+
+      if (wasTap) {
+        const now = Date.now()
+        if (now - lastTap < 300) {
+          lastTap = 0
+          const a = touchActions.current
+          if (zoomRef.current > 1) a.resetView()
+          else a.animateTo(2.5, 0, 0)
+        } else {
+          lastTap = now
+        }
+        touch = null
+        return
+      }
+
+      if (zoomRef.current <= 1 && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5 && dt < 500) {
+        const a = touchActions.current
+        if (dx < 0 && a.hasNext) a.onNext()
+        else if (dx > 0 && a.hasPrev) a.onPrev()
+      }
+      touch = null
+    }
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true })
+    el.addEventListener('touchmove', onTouchMove, { passive: false })
+    el.addEventListener('touchend', onTouchEnd, { passive: true })
+    el.addEventListener('touchcancel', onTouchEnd, { passive: true })
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart)
+      el.removeEventListener('touchmove', onTouchMove)
+      el.removeEventListener('touchend', onTouchEnd)
+      el.removeEventListener('touchcancel', onTouchEnd)
+    }
+  }, [])
+
   const isZoomed = zoom > 1
 
   async function saveMetadata() {
@@ -284,6 +360,95 @@ function LightboxInner({
     } catch { }
   }
 
+  const sidebarContent = (
+    <>
+      {editing ? (
+        <>
+          <div className="flex flex-col gap-1">
+            <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Title</label>
+            <input value={editTitle} onChange={e => setEditTitle(e.target.value)} className="px-2 py-1 rounded border border-[var(--color-border)] bg-[var(--color-bg)] text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-accent)]" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">World</label>
+            <select value={editWorldId} onChange={e => setEditWorldId(e.target.value)} className="px-2 py-1.5 rounded border border-[var(--color-border)] bg-[var(--color-bg)] text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-accent)]">
+              <option value="">—</option>
+              {worlds.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
+            </select>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Tags (comma-separated)</label>
+            <input value={editTags} onChange={e => setEditTags(e.target.value)} className="px-2 py-1 rounded border border-[var(--color-border)] bg-[var(--color-bg)] text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-accent)]" placeholder="#builds, #base" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Description</label>
+            <textarea value={editDesc} onChange={e => setEditDesc(e.target.value)} rows={4} className="px-2 py-1 rounded border border-[var(--color-border)] bg-[var(--color-bg)] text-xs text-[var(--color-text-dim)] outline-none resize-none focus:border-[var(--color-accent)]" />
+          </div>
+          <div className="flex gap-2 mt-1">
+            <button onClick={saveMetadata} disabled={saving} className="flex-1 text-xs px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-black font-medium hover:bg-[var(--color-accent-dim)] disabled:opacity-50 transition-colors">
+              {saving ? 'Saving...' : 'Save'}
+            </button>
+            <button onClick={() => setEditing(false)} className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors">
+              Cancel
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="flex flex-col gap-1">
+            <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Title</label>
+            <div className="font-[family-name:var(--font-sans)] text-lg font-medium tracking-tight text-[var(--color-text)]">
+              {screenshot.title || 'Untitled'}
+            </div>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Date</label>
+            <div className="text-sm text-[var(--color-text)]">
+              {screenshot.date ? new Date(screenshot.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '—'}
+            </div>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">World</label>
+            <div className="text-sm text-[var(--color-text)]">{screenshot.world?.name || '—'}</div>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Tags</label>
+            <div className="flex flex-wrap gap-1.5">
+              {screenshot.tags?.length ? screenshot.tags.map(t => (
+                <span key={t.id} className="text-xs px-2 py-0.5 rounded bg-[var(--color-bg-hover)] text-[var(--color-accent)]">{t.name}</span>
+              )) : <span className="text-sm text-[var(--color-text-dim)]">—</span>}
+            </div>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Description</label>
+            <div className="text-xs text-[var(--color-text-dim)] leading-relaxed">{screenshot.description || '—'}</div>
+          </div>
+          <div className="pt-2 border-t border-[var(--color-border)]">
+            <ShareButton screenshotId={screenshot.id} />
+          </div>
+          {authed && (
+            <div className="flex gap-2">
+              <button onClick={() => { setEditTitle(screenshot.title || ''); setEditDesc(screenshot.description || ''); setEditTags(screenshot.tags?.map(t => t.name).join(', ') || ''); setEditWorldId(screenshot.worldId || ''); setEditing(true) }} className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors">
+                Edit
+              </button>
+              <button onClick={() => setShowDelete(true)} className="text-xs px-3 py-1.5 rounded-lg border border-red-800 text-red-400 hover:bg-red-900/30 transition-colors">
+                Delete
+              </button>
+            </div>
+          )}
+        </>
+      )}
+      {showDelete && (
+        <div className="flex flex-col gap-2 p-3 rounded-lg bg-red-900/20 border border-red-800/50">
+          <p className="text-xs text-red-400">Delete this screenshot? This cannot be undone.</p>
+          <div className="flex gap-2">
+            <button onClick={deleteScreenshot} className="flex-1 text-xs px-3 py-1.5 rounded-lg bg-red-700 text-white hover:bg-red-600 transition-colors">Delete</button>
+            <button onClick={() => setShowDelete(false)} className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors">Cancel</button>
+          </div>
+        </div>
+      )}
+    </>
+  )
+
   return (
     <div
       className="fixed inset-0 z-50 flex bg-black opacity-0 animate-[fadeIn_0.25s_ease_forwards]"
@@ -294,7 +459,7 @@ function LightboxInner({
         {screenshot.panorama ? (
           <PanoramaViewer imageUrl={imgSrc} />
         ) : (
-          <div ref={wrapRef} className="w-full h-full flex items-center justify-center relative">
+          <div ref={wrapRef} className="w-full h-full flex items-center justify-center relative" style={{ touchAction: 'none' }}>
             {!imageLoaded && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-8 h-8 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
@@ -371,93 +536,38 @@ function LightboxInner({
         </button>
       )}
 
-      {/* Sidebar */}
-      <div className="w-80 flex-shrink-0 border-l border-[var(--color-border)] p-7 flex flex-col gap-5 overflow-y-auto bg-[#141414]">
-        {editing ? (
-          <>
-            <div className="flex flex-col gap-1">
-              <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Title</label>
-              <input value={editTitle} onChange={e => setEditTitle(e.target.value)} className="px-2 py-1 rounded border border-[var(--color-border)] bg-[var(--color-bg)] text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-accent)]" />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">World</label>
-              <select value={editWorldId} onChange={e => setEditWorldId(e.target.value)} className="px-2 py-1.5 rounded border border-[var(--color-border)] bg-[var(--color-bg)] text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-accent)]">
-                <option value="">—</option>
-                {worlds.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
-              </select>
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Tags (comma-separated)</label>
-              <input value={editTags} onChange={e => setEditTags(e.target.value)} className="px-2 py-1 rounded border border-[var(--color-border)] bg-[var(--color-bg)] text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-accent)]" placeholder="#builds, #base" />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Description</label>
-              <textarea value={editDesc} onChange={e => setEditDesc(e.target.value)} rows={4} className="px-2 py-1 rounded border border-[var(--color-border)] bg-[var(--color-bg)] text-xs text-[var(--color-text-dim)] outline-none resize-none focus:border-[var(--color-accent)]" />
-            </div>
-            <div className="flex gap-2 mt-1">
-              <button onClick={saveMetadata} disabled={saving} className="flex-1 text-xs px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-black font-medium hover:bg-[var(--color-accent-dim)] disabled:opacity-50 transition-colors">
-                {saving ? 'Saving...' : 'Save'}
-              </button>
-              <button onClick={() => setEditing(false)} className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors">
-                Cancel
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="flex flex-col gap-1">
-              <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Title</label>
-              <div className="font-[family-name:var(--font-sans)] text-lg font-medium tracking-tight text-[var(--color-text)]">
-                {screenshot.title || 'Untitled'}
-              </div>
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Date</label>
-              <div className="text-sm text-[var(--color-text)]">
-                {screenshot.date ? new Date(screenshot.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '—'}
-              </div>
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">World</label>
-              <div className="text-sm text-[var(--color-text)]">{screenshot.world?.name || '—'}</div>
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Tags</label>
-              <div className="flex flex-wrap gap-1.5">
-                {screenshot.tags?.length ? screenshot.tags.map(t => (
-                  <span key={t.id} className="text-xs px-2 py-0.5 rounded bg-[var(--color-bg-hover)] text-[var(--color-accent)]">{t.name}</span>
-                )) : <span className="text-sm text-[var(--color-text-dim)]">—</span>}
-              </div>
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-[0.625rem] font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Description</label>
-              <div className="text-xs text-[var(--color-text-dim)] leading-relaxed">{screenshot.description || '—'}</div>
-            </div>
-            <div className="pt-2 border-t border-[var(--color-border)]">
-              <ShareButton screenshotId={screenshot.id} />
-            </div>
-            {authed && (
-              <div className="flex gap-2">
-                <button onClick={() => { setEditTitle(screenshot.title || ''); setEditDesc(screenshot.description || ''); setEditTags(screenshot.tags?.map(t => t.name).join(', ') || ''); setEditWorldId(screenshot.worldId || ''); setEditing(true) }} className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors">
-                  Edit
-                </button>
-                <button onClick={() => setShowDelete(true)} className="text-xs px-3 py-1.5 rounded-lg border border-red-800 text-red-400 hover:bg-red-900/30 transition-colors">
-                  Delete
-                </button>
-              </div>
-            )}
-          </>
-        )}
-        {showDelete && (
-          <div className="flex flex-col gap-2 p-3 rounded-lg bg-red-900/20 border border-red-800/50">
-            <p className="text-xs text-red-400">Delete this screenshot? This cannot be undone.</p>
-            <div className="flex gap-2">
-              <button onClick={deleteScreenshot} className="flex-1 text-xs px-3 py-1.5 rounded-lg bg-red-700 text-white hover:bg-red-600 transition-colors">Delete</button>
-              <button onClick={() => setShowDelete(false)} className="text-xs px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors">Cancel</button>
-            </div>
+      {/* Info toggle (mobile) */}
+      <button
+        onClick={() => setShowMobileInfo(v => !v)}
+        className="lg:hidden absolute top-4 left-4 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+        aria-label="Details"
+      >
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+        </svg>
+      </button>
+
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:flex w-80 flex-shrink-0 border-l border-[var(--color-border)] p-7 flex-col gap-5 overflow-y-auto bg-[#141414]">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile details bottom sheet */}
+      {showMobileInfo && (
+        <div className="lg:hidden absolute inset-x-0 bottom-0 z-40 max-h-[75dvh] overflow-y-auto rounded-t-2xl bg-[#141414] border-t border-[var(--color-border)] shadow-2xl">
+          <div className="sticky top-0 z-10 bg-[#141414] flex items-center justify-between px-5 py-3 border-b border-[var(--color-border)]">
+            <span className="text-xs font-medium uppercase tracking-widest text-[var(--color-text-muted)]">Details</span>
+            <button onClick={() => setShowMobileInfo(false)} className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors" aria-label="Close details">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-        )}
-      </div>
+          <div className="p-5 flex flex-col gap-5">
+            {sidebarContent}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

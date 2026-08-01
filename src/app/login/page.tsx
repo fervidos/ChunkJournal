@@ -32,10 +32,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center bg-[var(--color-bg)]">
+    <div className="min-h-dvh w-full flex items-center justify-center bg-[var(--color-bg)] p-4">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-4 w-80 p-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)]"
+        className="flex flex-col gap-4 w-full max-w-sm p-6 sm:p-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)]"
       >
         <h1 className="text-xl font-semibold tracking-tight">
           <span className="text-[var(--color-accent)]">Chunk</span>Journal

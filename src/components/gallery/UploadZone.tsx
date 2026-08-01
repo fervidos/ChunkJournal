@@ -218,18 +218,18 @@ export default function UploadZone({ onClose, onUploaded, worlds }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-6"
       onMouseDown={(e) => { if (e.target === e.currentTarget) handleClose() }}
     >
-      <div className="bg-[#1a1a1a] border border-[var(--color-border)] rounded-xl w-full max-w-2xl shadow-2xl scale-95 opacity-0 animate-[scaleIn_0.2s_ease_forwards] max-h-[90vh] flex flex-col">
-        <div className="flex items-center justify-between p-6 pb-0">
+      <div className="bg-[#1a1a1a] border border-[var(--color-border)] rounded-xl w-full max-w-2xl shadow-2xl scale-95 opacity-0 animate-[scaleIn_0.2s_ease_forwards] max-h-[92dvh] flex flex-col">
+        <div className="flex items-center justify-between p-4 sm:p-6 pb-0">
           <h2 className="text-lg font-semibold tracking-tight">
             <span className="text-[var(--color-accent)]">Upload</span> screenshots
           </h2>
           <button onClick={handleClose} className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] text-lg">✕</button>
         </div>
 
-        <div className="p-6 pb-0">
+        <div className="p-4 sm:p-6 pb-0">
           {restored && (
             <div className="mb-3 text-xs text-[var(--color-accent)] bg-[var(--color-accent)]/10 px-3 py-1.5 rounded-lg">
               Draft restored — your previous session has been recovered
@@ -259,11 +259,11 @@ export default function UploadZone({ onClose, onUploaded, worlds }: Props) {
         </div>
 
         {files.length > 0 && (
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
             {files.map((entry) => (
-              <div key={entry.id} className="flex gap-4 p-3 rounded-lg border border-[var(--color-border)] bg-[#161616]">
-                <img src={entry.preview} className="w-20 h-20 object-cover rounded flex-shrink-0" />
-                <div className="flex-1 grid grid-cols-2 gap-x-3 gap-y-2">
+              <div key={entry.id} className="flex gap-3 sm:gap-4 p-3 rounded-lg border border-[var(--color-border)] bg-[#161616]">
+                <img src={entry.preview} className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded flex-shrink-0" />
+                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-2">
                   <div className="col-span-2 flex items-center justify-between">
                     <span className="text-xs text-[var(--color-text-muted)] truncate">{entry.file.name}</span>
                     <button onClick={() => removeFile(entry.id)} className="text-xs text-red-400 hover:text-red-300">Remove</button>
@@ -299,7 +299,7 @@ export default function UploadZone({ onClose, onUploaded, worlds }: Props) {
           </div>
         )}
 
-        <div className="p-6 pt-4 border-t border-[var(--color-border)] mt-4">
+        <div className="p-4 sm:p-6 pt-4 border-t border-[var(--color-border)] mt-4">
           {uploading && (
             <div className="mb-3">
               <div className="flex items-center justify-between text-xs text-[var(--color-text-muted)] mb-1.5">

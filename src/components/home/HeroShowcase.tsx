@@ -135,14 +135,14 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
         <p className="mt-5 text-base sm:text-lg text-[var(--color-text-dim)] leading-relaxed max-w-md mx-auto">
           A collection of the worlds I&apos;ve explored, the places I&apos;ve built, and the memories I&apos;ve made with the people I&apos;ve met along the way. Every screenshot tells a story I don&apos;t want to forget, and this is where I&apos;ve chosen to keep them.
         </p>
-        <div className="mt-8 flex items-center justify-center gap-4">
-          <Link href="/gallery" className="inline-flex items-center gap-2 text-sm px-5 py-2.5 rounded-xl bg-[var(--color-accent)] text-black font-semibold hover:bg-[var(--color-accent-dim)] transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[var(--color-accent)]/20">
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+          <Link href="/gallery" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm px-5 py-2.5 rounded-xl bg-[var(--color-accent)] text-black font-semibold hover:bg-[var(--color-accent-dim)] transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[var(--color-accent)]/20">
             Enter the Gallery
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
             </svg>
           </Link>
-          <Link href="/login" className="inline-flex items-center gap-2 text-sm px-5 py-2.5 rounded-xl border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] hover:border-[var(--color-text-muted)] transition-all duration-200">
+          <Link href="/login" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm px-5 py-2.5 rounded-xl border border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] hover:border-[var(--color-text-muted)] transition-all duration-200">
             Login
           </Link>
         </div>
