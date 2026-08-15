@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-bg: #1a1a1a;
-  --color-bg-card: #1f1f1f;
-  --color-bg-hover: #262626;
-  --color-bg-elevated: #242424;
-  --color-border: #2a2a2a;
-  --color-border-light: #333;
-  --color-text: #e8e6e3;
-  --color-text-dim: #a0a0a0;
-  --color-text-muted: #666;
-  --color-accent: #7BBC5E;
-  --color-accent-dim: #5a8f44;
-  --color-accent-glow: rgba(123, 188, 94, 0.12);
+  --color-bg: #f3efe9;
+  --color-bg-card: #f9f6f2;
+  --color-bg-hover: #efe7df;
+  --color-bg-elevated: #f2eee9;
+  --color-border: #ddd1c3;
+  --color-border-light: #e9e2d8;
+  --color-text: #1f1b18;
+  --color-text-dim: #5d554f;
+  --color-text-muted: #867c73;
+  --color-accent: #6f8d65;
+  --color-accent-dim: #587552;
+  --color-accent-glow: rgba(111, 141, 101, 0.12);
   --font-sans: var(--font-inter), var(--font-geist), var(--font-ibm-plex), -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: var(--font-ibm-plex), monospace;
   --animate-fadeIn: fadeIn 0.5s ease forwards;
@@ -26,7 +26,9 @@ html {
 }
 
 body {
-  background: var(--color-bg);
+  background:
+    radial-gradient(circle at top, rgba(255,255,255,0.55), transparent 32%),
+    linear-gradient(180deg, #f7f4f1 0%, var(--color-bg) 100%);
   color: var(--color-text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;

@@ -34,7 +34,7 @@ export default function GalleryItem({ screenshot, onSelect }: Props) {
   return (
     <button
       onClick={onSelect}
-      className="group relative aspect-[16/10] rounded-lg overflow-hidden bg-[var(--color-bg-card)] border border-[var(--color-border)] cursor-pointer transition-all duration-250 hover:border-[var(--color-accent)] hover:scale-[1.02] text-left"
+      className="group relative aspect-[16/10] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] text-left shadow-[0_1px_2px_rgba(17,24,39,0.04)] cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--color-accent)] hover:shadow-[0_10px_24px_rgba(17,24,39,0.08)]"
     >
       <img
         key={screenshot.id}
