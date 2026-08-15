@@ -16,7 +16,7 @@ export default function GalleryGrid({ screenshots, loading, onSelect }: Props) {
         {Array.from({ length: 12 }).map((_, i) => (
           <div
             key={i}
-            className="aspect-[16/10] rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)]"
+            className="aspect-[16/10] rounded-2xl bg-[var(--color-bg-card)] border border-[var(--color-border)] shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]"
           />
         ))}
       </div>

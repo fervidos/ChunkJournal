@@ -133,8 +133,8 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
           Chunk by Chunk
           <span className="w-6 h-px bg-[var(--color-border)]" />
         </div>
-        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-[1.05]">
-          <span className="text-[var(--color-accent)]">Chunk</span><span className="text-white">Journal</span>
+        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-[-0.06em] leading-[0.98]">
+          <span className="text-[var(--color-accent)]">Chunk</span><span className="text-[var(--color-text)]">Journal</span>
         </h1>
         <p className="mt-5 text-base sm:text-lg text-[var(--color-text-dim)] leading-relaxed max-w-md mx-auto">
           A collection of the worlds I&apos;ve explored, the places I&apos;ve built, and the memories I&apos;ve made with the people I&apos;ve met along the way. Every screenshot tells a story I don&apos;t want to forget, and this is where I&apos;ve chosen to keep them.
@@ -153,7 +153,7 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
       </div>
 
       {/* Showcase */}
-      <div className="relative w-full max-w-5xl aspect-[3/2] sm:aspect-[16/9] rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-2xl shadow-black/50 bg-[var(--color-bg-card)]">
+      <div className="relative w-full max-w-5xl aspect-[3/2] sm:aspect-[16/9] rounded-[28px] overflow-hidden border border-[var(--color-border)] shadow-[0_28px_60px_rgba(0,0,0,0.35)] bg-[var(--color-bg-card)]">
         {/* Shimmer placeholder behind everything */}
         {!loaded && (
           <div className="absolute inset-0 animate-pulse bg-[var(--color-bg-hover)]" />
@@ -188,9 +188,9 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight">{s.title || s.filename}</h2>
               {s.description && <p className="mt-2 text-sm sm:text-base text-white/60 line-clamp-2 max-w-lg leading-relaxed">{s.description}</p>}
               <div className="mt-3 flex flex-wrap items-center gap-2">
-                {s.world && <span className="text-xs px-2.5 py-1 rounded-full bg-white/10 text-white/70 backdrop-blur-sm border border-white/10">{s.world.name}</span>}
+                {s.world && <span className="text-xs px-2.5 py-1 rounded-full bg-white/10 text-white/80 backdrop-blur-sm border border-white/10">{s.world.name}</span>}
                 {s.tags?.slice(0, 3).map(t => (
-                  <span key={t.id} className="text-xs px-2.5 py-1 rounded-full bg-[var(--color-accent)]/15 text-[var(--color-accent)] backdrop-blur-sm border border-[var(--color-accent)]/20">#{t.name}</span>
+                  <span key={t.id} className="text-xs px-2.5 py-1 rounded-full bg-[var(--color-accent)]/12 text-[var(--color-text)] backdrop-blur-sm border border-[var(--color-accent)]/15">#{t.name}</span>
                 ))}
                 {s.tags && s.tags.length > 3 && <span className="text-xs text-white/40">+{s.tags.length - 3}</span>}
               </div>

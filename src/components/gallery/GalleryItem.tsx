@@ -34,7 +34,7 @@ export default function GalleryItem({ screenshot, onSelect }: Props) {
   return (
     <button
       onClick={onSelect}
-      className="group relative aspect-[16/10] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] text-left shadow-[0_1px_2px_rgba(17,24,39,0.04)] cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--color-accent)] hover:shadow-[0_10px_24px_rgba(17,24,39,0.08)]"
+      className="group relative aspect-[16/10] overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] text-left shadow-[0_10px_22px_rgba(0,0,0,0.12)] cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:border-[var(--color-border-light)] hover:shadow-[0_18px_30px_rgba(0,0,0,0.18)]"
     >
       <img
         key={screenshot.id}
@@ -56,13 +56,13 @@ export default function GalleryItem({ screenshot, onSelect }: Props) {
           360°
         </div>
       )}
-      <div className="absolute bottom-0 left-0 right-0 px-2.5 pb-2 pointer-events-none bg-gradient-to-t from-black/80 via-black/20 to-transparent pt-8" />
-      <div className="absolute bottom-0 left-0 right-0 px-2.5 pb-2 pointer-events-none">
-        <div className="text-sm text-white/90 font-medium truncate leading-tight">
+      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/80 via-black/35 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 px-2.5 pb-2.5 pointer-events-none">
+        <div className="text-sm text-white font-medium truncate leading-tight drop-shadow-sm">
           {screenshot.title || screenshot.filename}
         </div>
         {screenshot.description && (
-          <div className="text-xs text-white/50 truncate leading-tight mt-px">
+          <div className="text-[11px] text-white/65 truncate leading-tight mt-0.5 drop-shadow-sm">
             {screenshot.description}
           </div>
         )}

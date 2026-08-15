@@ -28,7 +28,7 @@ export default function Sidebar({
   onSearchChange,
 }: Props) {
   return (
-    <aside className="w-full h-full flex-shrink-0 border-r border-[var(--color-border)] flex flex-col gap-6 p-5 overflow-y-auto opacity-0 animate-[fadeIn_0.5s_ease_0.1s_forwards]">
+    <aside className="w-full h-full flex-shrink-0 border-r border-[var(--color-border)] bg-[var(--color-bg)]/90 flex flex-col gap-6 p-5 overflow-y-auto opacity-0 animate-[fadeIn_0.5s_ease_0.1s_forwards]">
       <div className="flex items-center justify-between">
         <h1 className="font-[family-name:var(--font-sans)] text-xl font-semibold tracking-tight">
           <Link href="/" onClick={onClose} className="hover:opacity-80 transition-opacity">
@@ -53,9 +53,9 @@ export default function Sidebar({
         <nav className="flex flex-col gap-0.5">
           <button
             onClick={() => onWorldChange(null)}
-            className={`text-left px-2.5 py-1.5 rounded-md text-sm transition-colors ${
+            className={`text-left px-2.5 py-1.5 rounded-lg text-sm transition-all ${
               activeWorld === null
-                ? 'bg-[var(--color-bg-hover)] text-[var(--color-accent)]'
+                ? 'bg-[var(--color-bg-hover)] text-[var(--color-accent)] border border-[var(--color-border)]'
                 : 'text-[var(--color-text-dim)] hover:bg-[var(--color-bg-hover)] hover:text-[var(--color-text)]'
             }`}
           >
@@ -68,9 +68,9 @@ export default function Sidebar({
             <button
               key={w.id}
               onClick={() => onWorldChange(w.slug)}
-              className={`text-left px-2.5 py-1.5 rounded-md text-sm transition-colors ${
+              className={`text-left px-2.5 py-1.5 rounded-lg text-sm transition-all ${
                 activeWorld === w.slug
-                  ? 'bg-[var(--color-bg-hover)] text-[var(--color-accent)]'
+                  ? 'bg-[var(--color-bg-hover)] text-[var(--color-accent)] border border-[var(--color-border)]'
                   : 'text-[var(--color-text-dim)] hover:bg-[var(--color-bg-hover)] hover:text-[var(--color-text)]'
               }`}
             >
@@ -90,9 +90,9 @@ export default function Sidebar({
         <nav className="flex flex-col gap-0.5">
           <button
             onClick={() => onTagChange(null)}
-            className={`text-left px-2.5 py-1.5 rounded-md text-sm transition-colors ${
+            className={`text-left px-2.5 py-1.5 rounded-lg text-sm transition-all ${
               activeTag === null
-                ? 'bg-[var(--color-bg-hover)] text-[var(--color-accent)]'
+                ? 'bg-[var(--color-bg-hover)] text-[var(--color-accent)] border border-[var(--color-border)]'
                 : 'text-[var(--color-text-dim)] hover:bg-[var(--color-bg-hover)] hover:text-[var(--color-text)]'
             }`}
           >
@@ -102,9 +102,9 @@ export default function Sidebar({
             <button
               key={t.id}
               onClick={() => onTagChange(t.name)}
-              className={`text-left px-2.5 py-1.5 rounded-md text-sm transition-colors ${
+              className={`text-left px-2.5 py-1.5 rounded-lg text-sm transition-all ${
                 activeTag === t.name
-                  ? 'bg-[var(--color-bg-hover)] text-[var(--color-accent)]'
+                  ? 'bg-[var(--color-bg-hover)] text-[var(--color-accent)] border border-[var(--color-border)]'
                   : 'text-[var(--color-text-dim)] hover:bg-[var(--color-bg-hover)] hover:text-[var(--color-text)]'
               }`}
             >

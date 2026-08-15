@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-bg: #f3efe9;
-  --color-bg-card: #f9f6f2;
-  --color-bg-hover: #efe7df;
-  --color-bg-elevated: #f2eee9;
-  --color-border: #ddd1c3;
-  --color-border-light: #e9e2d8;
-  --color-text: #1f1b18;
-  --color-text-dim: #5d554f;
-  --color-text-muted: #867c73;
-  --color-accent: #6f8d65;
-  --color-accent-dim: #587552;
-  --color-accent-glow: rgba(111, 141, 101, 0.12);
+  --color-bg: #12110f;
+  --color-bg-card: #181612;
+  --color-bg-hover: #201c18;
+  --color-bg-elevated: #1b1714;
+  --color-border: #2d2722;
+  --color-border-light: #3b332d;
+  --color-text: #f4efe9;
+  --color-text-dim: #d8cfc3;
+  --color-text-muted: #9d9389;
+  --color-accent: #a9b998;
+  --color-accent-dim: #83977a;
+  --color-accent-glow: rgba(169, 185, 152, 0.15);
   --font-sans: var(--font-inter), var(--font-geist), var(--font-ibm-plex), -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: var(--font-ibm-plex), monospace;
   --animate-fadeIn: fadeIn 0.5s ease forwards;
@@ -27,12 +27,25 @@ html {
 
 body {
   background:
-    radial-gradient(circle at top, rgba(255,255,255,0.55), transparent 32%),
-    linear-gradient(180deg, #f7f4f1 0%, var(--color-bg) 100%);
+    radial-gradient(circle at top, rgba(169, 185, 152, 0.12), transparent 28%),
+    linear-gradient(180deg, #181512 0%, var(--color-bg) 100%);
   color: var(--color-text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02), rgba(255,255,255,0.02)),
+    radial-gradient(rgba(255,255,255,0.04) 0.7px, transparent 0.7px);
+  background-size: auto, 11px 11px;
+  opacity: 0.45;
+  mix-blend-mode: screen;
 }
 
 /* Mobile: eliminate 300ms tap delay and double-tap zoom on interactive
