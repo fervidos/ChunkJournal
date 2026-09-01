@@ -63,16 +63,16 @@ export default async function HomePage() {
                 <span className="font-mono text-[9px] tracking-widest text-white/30 border border-white/15 px-1.5 py-0.5">ARCHIVE 01</span>
               </div>
               <p className="text-[13px] leading-relaxed text-white/50 max-w-[32ch]">
-                Every world holds a story, every build a memory. This archive is my way of keeping those moments alive and sharing them with anyone curious enough to explore.
+                Katipunan at dusk, Hiraya&apos;s tower at 3am — the builds I didn&apos;t want to forget, kept on paper.
               </p>
-              <div className="font-hand text-[13px] text-[#a9b998]/70 rotate-[-0.5deg]">— ink on paper, block by block</div>
+              <div className="font-hand text-[13px] text-[#a9b998]/70 rotate-[-0.5deg]">— kept block by block</div>
             </div>
 
             <div className="sm:text-center">
               <div className="font-mono text-[11px] tracking-[0.14em] text-white/30 mb-3">NAVIGATE</div>
               <div className="flex sm:justify-center gap-2 flex-wrap font-mono text-[11px] tracking-widest">
                 <a href="/gallery" className="px-3 py-1.5 border border-white/15 text-white/60 hover:text-[#f2ede6] hover:border-white/30 hover:bg-white/[0.03] transition-colors">GALLERY</a>
-                <a href="/login" className="px-3 py-1.5 border border-white/15 text-white/60 hover:text-[#f2ede6] hover:border-white/30 hover:bg-white/[0.03] transition-colors">CURATOR</a>
+                <a href="/login" className="px-3 py-1.5 border border-white/15 text-white/60 hover:text-[#f2ede6] hover:border-white/30 hover:bg-white/[0.03] transition-colors">LOGIN</a>
                 <span className="px-3 py-1.5 text-white/25">© {new Date().getFullYear()}</span>
               </div>
               <div className="mt-4 hidden sm:flex justify-center">
@@ -82,19 +82,10 @@ export default async function HomePage() {
 
             <div className="sm:text-right">
               <div className="font-mono text-[11px] tracking-[0.14em] text-white/30 mb-3">AT A GLANCE</div>
-              <div className="inline-flex sm:ml-auto gap-0 text-left border-[1.5px] border-[#a9b998]/30 bg-[#1a1816] p-0 overflow-hidden">
-                {[
-                  [totalScreenshots, 'SHOTS'],
-                  [totalWorlds, 'WORLDS'],
-                  [totalTags, 'TAGS'],
-                ].map(([v, k], i) => (
-                  <div key={String(k)} className={`px-4 py-3 text-center ${i !== 2 ? 'border-r border-[#a9b998]/20' : ''}`}>
-                    <div className="font-serif text-[18px] font-black leading-none text-[#f2ede6]">{v as number}</div>
-                    <div className="font-mono text-[9px] tracking-widest text-white/40 mt-1">{k as string}</div>
-                  </div>
-                )) as any}
+              <div className="sm:ml-auto max-w-[28ch] sm:text-right">
+                <div className="font-hand text-[15px] leading-tight text-[#a9b998] rotate-[-0.2deg]">My Katipunan & Hiraya — {totalScreenshots} nights after midnight</div>
+                <div className="mt-1 font-mono text-[11px] tracking-wide text-white/35">{totalScreenshots} frames • {totalWorlds} worlds • {totalTags} tags — {new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</div>
               </div>
-              <div className="mt-2 font-mono text-[9px] tracking-wide text-white/25">STAMPED • {new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase()}</div>
             </div>
           </div>
           <div className="mt-8 pt-5 border-t border-dashed border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 font-mono text-[10px] tracking-wide text-white/25">

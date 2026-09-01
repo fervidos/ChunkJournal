@@ -15,10 +15,10 @@
   --color-accent-glow: rgba(169, 185, 152, 0.15);
   --color-paper: #e8e0d0;
   --color-ink: #1a1816;
-  --font-sans: var(--font-inter), var(--font-geist), var(--font-ibm-plex), -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: var(--font-ibm-plex), -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif: var(--font-fraunces), Georgia, serif;
   --font-hand: var(--font-caveat), cursive;
-  --font-mono: var(--font-jetbrains), var(--font-ibm-plex), monospace;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
   --animate-fadeIn: fadeIn 0.5s ease forwards;
   --animate-scaleIn: scaleIn 0.4s ease forwards;
 }

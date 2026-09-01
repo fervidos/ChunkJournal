@@ -1,19 +1,7 @@
 import type { Metadata, Viewport } from "next"
-import { Inter, Geist, IBM_Plex_Sans, Fraunces, Caveat, JetBrains_Mono } from "next/font/google"
+import { IBM_Plex_Sans, Fraunces, Caveat, JetBrains_Mono } from "next/font/google"
 import NavBar from "@/components/NavBar"
 import "./globals.css"
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-})
-
-const geist = Geist({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-geist",
-})
 
 const ibmPlexSans = IBM_Plex_Sans({
   weight: ["400", "500", "600"],
@@ -77,7 +65,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${geist.variable} ${ibmPlexSans.variable} ${fraunces.variable} ${caveat.variable} ${jetBrains.variable} h-full antialiased`}>
+    <html lang="en" className={`${ibmPlexSans.variable} ${fraunces.variable} ${caveat.variable} ${jetBrains.variable} h-full antialiased`}>
       <body className="min-h-dvh flex flex-col">
         <NavBar />
         <main className="flex-1 flex flex-col">

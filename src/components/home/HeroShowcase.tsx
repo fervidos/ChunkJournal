@@ -96,7 +96,7 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
         <div className="grid lg:grid-cols-[0.95fr_1.35fr] gap-10 lg:gap-16 xl:gap-20 items-center">
 
           {/* LEFT — headline, one line, one CTA */}
-          <div className="flex flex-col">
+          <div className="flex flex-col relative z-10">
             <h1 className="font-serif font-black tracking-[-0.04em] leading-[0.86] text-[46px] sm:text-[58px] lg:text-[64px]">
               <span className="block text-[#a9b998]">Chunk</span>
               <span className="block text-[#f2ede6] -mt-1">Journal</span>
@@ -117,7 +117,7 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
           </div>
 
           {/* RIGHT — pinned print, minimal caption: world + title only */}
-          <div className="relative lg:mt-1">
+          <div className="relative lg:mt-1 lg:-ml-3 lg:translate-y-2">
             <div className="hidden lg:block absolute -top-2 left-1/2 -translate-x-1/2 z-20">
               <div className="w-3.5 h-3.5 rounded-full bg-[#c45a3a] border-[1.5px] border-[#9a3a1e] shadow-[0_2px_5px_rgba(0,0,0,0.35)] relative">
                 <div className="absolute inset-[3px] rounded-full bg-white/20" />
@@ -125,9 +125,15 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
               </div>
             </div>
 
-            <div className="relative bg-[#e8e0d0] p-[9px] sm:p-[10px] shadow-[0_16px_40px_rgba(0,0,0,0.4)] border border-[#d4c9b8]/60 rotate-[0.5deg]">
-              <div className="absolute -top-3 left-6 sm:left-8 w-[88px] h-[22px] bg-[#f0deb8] border border-black/[0.07] shadow-[0_1px_3px_rgba(0,0,0,0.14)] rotate-[-2deg] z-10">
-                <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 4px, black 4px, transparent 5px)` }} />
+            <div className="relative bg-[#e8e0d0] p-[9px] sm:p-[10px] shadow-[4px_6px_0_rgba(0,0,0,0.18),0_16px_40px_rgba(0,0,0,0.35)] border border-[#d4c9b8] rotate-[0.7deg] overflow-hidden">
+              {/* paper grain — tactile, not flat */}
+              <div className="pointer-events-none absolute inset-0 opacity-[0.06] mix-blend-multiply" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E")` }} />
+              {/* hand-torn edge hint — subtle irregular shadow line */}
+              <div className="pointer-events-none absolute inset-0 border border-[#1a1816]/5" style={{ clipPath: `polygon(0 0, 100% 0.3%, 99.7% 100%, 0.2% 99.8%)` }} />
+              <div className="absolute -top-3 left-6 sm:left-8 w-[88px] h-[22px] bg-[#f0deb8] border border-black/[0.07] shadow-[0_1px_3px_rgba(0,0,0,0.14)] rotate-[-2.2deg] z-10">
+                <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 4px, black 4px, transparent 5px)` }} />
+                {/* subtle wrinkle crease — human imperfection */}
+                <div className="absolute top-1/2 left-1/2 w-[1px] h-[14px] bg-black/10 rotate-12 -translate-x-1/2 -translate-y-1/2" />
               </div>
 
               <div className="relative bg-[#0f0e0d] border border-[#1a1816] overflow-hidden">
