@@ -28,7 +28,7 @@ export default function Sidebar({
   onSearchChange,
 }: Props) {
   return (
-    <aside className="w-full h-full flex-shrink-0 border-r border-[var(--color-border)] bg-[var(--color-bg)]/90 flex flex-col gap-6 p-5 overflow-y-auto opacity-0 animate-[fadeIn_0.5s_ease_0.1s_forwards]">
+    <aside className="w-full h-full flex-shrink-0 border-r border-[#25211e] bg-[#0f0e0d] flex flex-col gap-6 p-5 overflow-y-auto opacity-0 animate-[fadeIn_0.5s_ease_0.1s_forwards]">
       <div className="flex items-center justify-between">
         <h1 className="font-[family-name:var(--font-sans)] text-xl font-semibold tracking-tight">
           <Link href="/" onClick={onClose} className="hover:opacity-80 transition-opacity">
@@ -120,7 +120,7 @@ export default function Sidebar({
           placeholder="Search screenshots…"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] text-sm text-[var(--color-text)] outline-none placeholder:text-[var(--color-text-muted)] transition-colors focus:border-[var(--color-accent)]"
+          className="w-full px-3 py-2 border border-[#25211e] bg-[#1a1816] text-sm text-[#f2ede6] outline-none placeholder:text-[#8d847a] transition-colors focus:border-[#a9b998]"
         />
       </div>
     </aside>

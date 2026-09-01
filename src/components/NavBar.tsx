@@ -23,16 +23,9 @@ export default function NavBar() {
   return (
     <header className="sticky top-0 z-50 bg-[#0f0e0d] border-b border-[#25211e] pt-[env(safe-area-inset-top)]">
       <nav className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 h-[56px] flex items-center justify-between gap-4">
-        {/* Left — stamp + serif */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <span className="relative w-[32px] h-[32px] shrink-0 border-[1.5px] border-[#a9b998] bg-[#1a1816] flex items-center justify-center rotate-[-1.5deg] group-hover:rotate-0 transition-transform">
-            <span className="absolute inset-0 border border-white/10 m-[2px] pointer-events-none" />
-            <span className="font-mono text-[9px] font-bold tracking-widest text-[#a9b998] leading-none text-center">
-              C<span className="text-white/80">J</span>
-            </span>
-            <span className="absolute -top-1 -right-1 w-[6px] h-[6px] bg-[#a9b998] rounded-full hidden sm:block" />
-          </span>
-          <span className="font-serif text-[18px] font-black tracking-[-0.03em] leading-none">
+        {/* Left — wordmark only */}
+        <Link href="/" className="flex items-center gap-1.5 group">
+          <span className="font-serif text-[18px] font-black tracking-[-0.03em] leading-none group-hover:opacity-90 transition-opacity">
             <span className="text-[#a9b998]">Chunk</span><span className="text-[#f2ede6]">Journal</span>
           </span>
         </Link>

@@ -103,7 +103,7 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
             </h1>
 
             <p className="mt-5 text-[15px] leading-[1.65] text-[#d4c9b8] max-w-[32ch]">
-              Worlds, builds, and the people behind them — kept block by block.
+              A place for the worlds we build and the people who make them special.
             </p>
 
             <div className="mt-7">
@@ -151,8 +151,8 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
                     <h2 className={`font-serif text-[16px] sm:text-[17px] font-bold leading-none tracking-[-0.02em] text-[#1a1816] truncate transition-opacity duration-300 ${transitioning ? 'opacity-0' : 'opacity-100'}`}>{s.title || s.filename}</h2>
                   </div>
                   <div className="flex gap-1 shrink-0">
-                    <button onClick={() => go(-1)} className="w-7 h-7 grid place-items-center border border-black/15 bg-white/50 hover:bg-[#1a1816] hover:text-[#e8e0d0] transition-colors" aria-label="Prev">‹</button>
-                    <button onClick={() => go(1)} className="w-7 h-7 grid place-items-center border border-[#1a1816] bg-[#1a1816] text-[#e8e0d0] hover:bg-black transition-colors" aria-label="Next">›</button>
+                    <button onClick={() => go(-1)} className="w-7 h-7 grid place-items-center border border-[#1a1816]/20 bg-white text-[#1a1816] hover:bg-[#1a1816] hover:text-[#e8e0d0] transition-colors text-[16px] leading-none" aria-label="Prev">‹</button>
+                    <button onClick={() => go(1)} className="w-7 h-7 grid place-items-center border border-[#1a1816] bg-[#1a1816] text-[#e8e0d0] hover:bg-black transition-colors text-[16px] leading-none" aria-label="Next">›</button>
                   </div>
                 </div>
               </div>

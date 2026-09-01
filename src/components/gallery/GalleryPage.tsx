@@ -110,7 +110,7 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
         />
       </div>
       <main className="flex-1 flex flex-col min-w-0">
-        <div className="flex items-center justify-between gap-2 px-3 sm:px-6 py-2 sm:py-3 border-b border-[var(--color-border)]">
+        <div className="flex items-center justify-between gap-2 px-3 sm:px-6 py-2 sm:py-3 border-b border-[#25211e] bg-[#0f0e0d]">
           <div className="flex items-center gap-2 min-w-0">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -138,7 +138,7 @@ export default function GalleryPage({ worlds, tags: initialTags }: Props) {
                 setSort(e.target.value)
                 fetchScreenshots({ sort: e.target.value })
               }}
-              className="text-xs px-3 py-2 sm:py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-dim)] outline-none cursor-pointer flex-shrink-0"
+              className="text-xs px-3 py-2 sm:py-1.5 border border-[#25211e] bg-[#1a1816] text-[#d4c9b8] outline-none cursor-pointer flex-shrink-0 focus:border-[#a9b998] transition-colors"
             >
               <option value="newest">Newest</option>
               <option value="oldest">Oldest</option>
