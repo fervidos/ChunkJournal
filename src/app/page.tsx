@@ -56,16 +56,12 @@ export default async function HomePage() {
           <div className="grid sm:grid-cols-3 gap-8 items-start">
             <div className="space-y-3">
               <div className="flex items-center gap-2.5">
-                <span className="w-7 h-7 border-[1.5px] border-[#a9b998] bg-[#1a1816] grid place-items-center rotate-[-1deg]">
-                  <span className="font-mono text-[9px] font-bold tracking-widest text-[#a9b998]">CJ</span>
-                </span>
                 <span className="font-serif text-[15px] font-black tracking-tight"><span className="text-[#a9b998]">Chunk</span><span className="text-[#f2ede6]">Journal</span></span>
                 <span className="font-mono text-[9px] tracking-widest text-white/30 border border-white/15 px-1.5 py-0.5">ARCHIVE 01</span>
               </div>
               <p className="text-[13px] leading-relaxed text-white/50 max-w-[32ch]">
-                Katipunan at dusk, Hiraya&apos;s tower at 3am — the builds I didn&apos;t want to forget, kept on paper.
+                Every world holds a story, every build a memory. This archive is my way of keeping those moments alive and sharing them with anyone curious enough to explore.
               </p>
-              <div className="font-hand text-[13px] text-[#a9b998]/70 rotate-[-0.5deg]">— kept block by block</div>
             </div>
 
             <div className="sm:text-center">
@@ -82,9 +78,8 @@ export default async function HomePage() {
 
             <div className="sm:text-right">
               <div className="font-mono text-[11px] tracking-[0.14em] text-white/30 mb-3">AT A GLANCE</div>
-              <div className="sm:ml-auto max-w-[28ch] sm:text-right">
-                <div className="font-hand text-[15px] leading-tight text-[#a9b998] rotate-[-0.2deg]">My Katipunan & Hiraya — {totalScreenshots} nights after midnight</div>
-                <div className="mt-1 font-mono text-[11px] tracking-wide text-white/35">{totalScreenshots} frames • {totalWorlds} worlds • {totalTags} tags — {new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</div>
+              <div className="sm:ml-auto sm:text-right">
+                <div className="font-mono text-[11px] tracking-wide text-white/35">{totalScreenshots} frames • {totalWorlds} worlds • {totalTags} tags — {new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</div>
               </div>
             </div>
           </div>
