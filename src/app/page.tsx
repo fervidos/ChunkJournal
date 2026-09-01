@@ -13,6 +13,7 @@ export default async function HomePage() {
   try {
     const [screenshotRows, worldCount, tagCount] = await Promise.all([
       prisma.screenshot.findMany({
+        where: { panorama: false },
         orderBy: { date: "desc" },
         take: 48,
         include: {
@@ -25,6 +26,8 @@ export default async function HomePage() {
     ])
 
     screenshots = screenshotRows
+      // extra safety: filter any stragglers and prefer standard 16:9-ish frames to avoid stretch
+      .filter((s) => !s.panorama)
       .slice(0, 20)
       .map((s) => ({
         ...s,
