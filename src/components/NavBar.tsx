@@ -21,92 +21,75 @@ export default function NavBar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 pt-[env(safe-area-inset-top)]">
-      {/* outer shell with hairline */}
-      <div className="border-b border-white/[0.06] bg-[#0e0d0c]/70 backdrop-blur-[20px] supports-[backdrop-filter]:bg-[#0e0d0c]/60">
-        <nav className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 h-[56px] sm:h-[60px] flex items-center justify-between gap-4">
-          {/* Left — brand with mark */}
-          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-            <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group">
-              <span className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[var(--color-accent)] grid place-items-center shadow-[0_2px_12px_rgba(169,185,152,0.3)] group-hover:scale-[1.03] transition-transform">
-                {/* pixel chunk icon */}
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-black">
-                  <rect x="1" y="1" width="7" height="7" rx="1.2" fill="currentColor" opacity="0.95" />
-                  <rect x="10" y="1" width="7" height="7" rx="1.2" fill="currentColor" opacity="0.75" />
-                  <rect x="1" y="10" width="7" height="7" rx="1.2" fill="currentColor" opacity="0.65" />
-                  <rect x="10" y="10" width="7" height="7" rx="1.2" fill="currentColor" opacity="1" />
-                  <rect x="5.5" y="5.5" width="7" height="7" rx="1" fill="white" opacity="0.9" />
-                </svg>
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-white border-2 border-[var(--color-accent)] hidden sm:block" />
-              </span>
-              <span className="flex flex-col leading-none">
-                <span className="text-[15px] sm:text-[16px] font-black tracking-[-0.04em] whitespace-nowrap">
-                  <span className="text-[var(--color-accent)]">Chunk</span><span className="text-white">Journal</span>
-                </span>
-                <span className="hidden sm:block text-[10px] font-mono tracking-[0.16em] text-white/35 -mt-0.5">ARCHIVE — 01 / CHUNK BY CHUNK</span>
-              </span>
-            </Link>
-
-            <span className="hidden lg:block w-px h-7 bg-white/10 ml-1" />
-            <span className="hidden lg:inline-flex items-center gap-2 text-[11px] font-mono tracking-wide text-white/30">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              ONLINE • {new Date().getFullYear()}
-            </span>
-          </div>
-
-          {/* Center — mini nav (desktop) */}
-          <div className="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur">
-            <Link href="/" className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-colors ${pathname === '/' ? 'bg-white text-black' : 'text-white/60 hover:text-white hover:bg-white/10'}`}>
-              Journal
-            </Link>
-            <Link href="/gallery" className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-colors ${pathname?.startsWith('/gallery') ? 'bg-white text-black' : 'text-white/60 hover:text-white hover:bg-white/10'}`}>
-              Gallery
-            </Link>
-            <span className="px-2 text-white/15 text-xs">•</span>
-            <span className="pr-2 text-[11px] font-mono tracking-widest text-white/30">SEED — 3429</span>
-          </div>
-
-          {/* Right */}
-          <div className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
-            <Link
-              href="/gallery"
-              className="hidden sm:inline-flex items-center gap-1.5 text-[13px] font-medium text-white/70 hover:text-white transition-colors px-2 py-1"
-            >
-              <span className="hidden lg:inline">Explore</span> Gallery
-              <svg className="w-3.5 h-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.7}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
-            </Link>
-
-            {/* Mobile gallery pill */}
-            <Link
-              href="/gallery"
-              className="sm:hidden inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-full bg-white/10 border border-white/10 text-white/90 backdrop-blur"
-            >
-              Gallery
-            </Link>
-
-            {authed ? (
-              <button
-                onClick={handleLogout}
-                className="inline-flex items-center gap-1.5 text-[13px] font-semibold px-3.5 sm:px-4 py-2 rounded-full bg-white text-black hover:bg-white/90 transition-colors"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                Logout
-              </button>
-            ) : (
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-1.5 text-[13px] font-semibold px-3.5 sm:px-4 py-2 rounded-full bg-[var(--color-accent)] text-black hover:bg-white transition-colors shadow-[0_4px_16px_rgba(169,185,152,0.25)]"
-              >
-                <span className="hidden sm:inline">Curator</span> Login
-                <svg className="w-3.5 h-3.5 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
-              </Link>
-            )}
-          </div>
-        </nav>
+    <header className="sticky top-0 z-50 bg-[#0f0e0d] border-b border-[#25211e] pt-[env(safe-area-inset-top)]">
+      {/* top field line — like a notebook header */}
+      <div className="hidden sm:flex h-[22px] items-center justify-between px-6 lg:px-8 border-b border-dashed border-white/[0.07] bg-[#0f0e0d]">
+        <span className="text-[10px] font-mono tracking-[0.16em] text-white/30">
+          FIELD ARCHIVE — VOL. 01 — <span className="text-white/50">CHUNK BY CHUNK</span> — CATALOGUED
+        </span>
+        <span className="text-[10px] font-mono tracking-[0.14em] text-white/25 hidden lg:inline">
+          EST. 2026 — SEED 3429 — COORD [ 115, -183 ]
+        </span>
       </div>
 
-      {/* thin accent line */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-[var(--color-accent)]/20 to-transparent opacity-60" />
+      <nav className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 h-[56px] flex items-center justify-between gap-4">
+        {/* Left — stamp + serif */}
+        <Link href="/" className="flex items-center gap-3 group">
+          <span className="relative w-[32px] h-[32px] shrink-0 border-[1.5px] border-[#a9b998] bg-[#1a1816] flex items-center justify-center rotate-[-1.5deg] group-hover:rotate-0 transition-transform">
+            <span className="absolute inset-0 border border-white/10 m-[2px] pointer-events-none" />
+            <span className="font-mono text-[9px] font-bold tracking-widest text-[#a9b998] leading-none text-center">
+              C<span className="text-white/80">J</span>
+            </span>
+            <span className="absolute -top-1 -right-1 w-[6px] h-[6px] bg-[#a9b998] rounded-full hidden sm:block" />
+          </span>
+          <span className="flex flex-col leading-none">
+            <span className="font-serif text-[18px] font-black tracking-[-0.03em] leading-none">
+              <span className="text-[#a9b998]">Chunk</span><span className="text-[#f2ede6]">Journal</span>
+            </span>
+            <span className="font-mono text-[10px] tracking-[0.14em] text-white/35 -mt-0.5 hidden sm:block">ARCHIVE 01 / INK + PAPER</span>
+          </span>
+        </Link>
+
+        {/* Center — thin rules, not pills */}
+        <div className="hidden md:flex items-center gap-4 text-[13px]">
+          <Link href="/" className={`pb-1 border-b transition-colors ${pathname === '/' ? 'border-[#a9b998] text-[#f2ede6] font-medium' : 'border-transparent text-white/45 hover:text-white/80 hover:border-white/20'}`}>
+            Journal
+          </Link>
+          <span className="text-white/15">/</span>
+          <Link href="/gallery" className={`pb-1 border-b transition-colors ${pathname?.startsWith('/gallery') ? 'border-[#a9b998] text-[#f2ede6] font-medium' : 'border-transparent text-white/45 hover:text-white/80 hover:border-white/20'}`}>
+            Gallery
+          </Link>
+          <span className="hidden lg:inline-flex ml-2 text-[11px] font-mono tracking-widest text-white/20 border border-white/10 px-2 py-1">
+            SHEET 01 — 20 FRAMES
+          </span>
+        </div>
+
+        {/* Right — text link + ink button */}
+        <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+          <Link href="/gallery" className="hidden sm:inline-flex text-[13px] font-mono tracking-wide text-white/60 hover:text-[#f2ede6] underline underline-offset-4 decoration-white/20 hover:decoration-[#a9b998] transition-colors">
+            Explore →
+          </Link>
+          <Link href="/gallery" className="sm:hidden text-[12px] font-mono tracking-widest text-white/60 border border-white/15 px-3 py-1.5">
+            GALLERY
+          </Link>
+
+          {authed ? (
+            <button
+              onClick={handleLogout}
+              className="text-[12px] font-mono tracking-widest px-3.5 py-[7px] border border-white/15 bg-transparent text-white/70 hover:bg-white hover:text-black hover:border-white transition-colors"
+            >
+              LOGOUT
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="text-[12px] font-mono tracking-widest px-3.5 sm:px-4 py-[8px] bg-[#a9b998] text-[#0f0e0d] font-bold border border-[#a9b998] hover:bg-[#f2ede6] hover:border-[#f2ede6] transition-colors"
+            >
+              <span className="hidden sm:inline">CURATOR </span>LOGIN
+            </Link>
+          )}
+        </div>
+      </nav>
     </header>
   )
 }

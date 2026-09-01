@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Inter, Geist, IBM_Plex_Sans } from "next/font/google"
+import { Inter, Geist, IBM_Plex_Sans, Fraunces, Caveat, JetBrains_Mono } from "next/font/google"
 import NavBar from "@/components/NavBar"
 import "./globals.css"
 
@@ -20,6 +20,26 @@ const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-ibm-plex",
+})
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-fraunces",
+  weight: ["700", "800", "900"],
+})
+
+const caveat = Caveat({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-caveat",
+  weight: ["500", "600"],
+})
+
+const jetBrains = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-jetbrains",
 })
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://chunkjournal.vercel.app'
@@ -57,7 +77,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${geist.variable} ${ibmPlexSans.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} ${geist.variable} ${ibmPlexSans.variable} ${fraunces.variable} ${caveat.variable} ${jetBrains.variable} h-full antialiased`}>
       <body className="min-h-dvh flex flex-col">
         <NavBar />
         <main className="flex-1 flex flex-col">

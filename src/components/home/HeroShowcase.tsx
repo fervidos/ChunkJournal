@@ -57,7 +57,7 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
     }
     timerRef.current = setInterval(() => {
       advance((current + 1) % n)
-    }, 5000)
+    }, 5500)
     return () => { if (timerRef.current) clearInterval(timerRef.current) }
   }, [current, n, paused])
 
@@ -67,14 +67,14 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
     setTimeout(() => {
       setCurrent(idx)
       setFadingTo(null)
-    }, 650)
+    }, 500)
   }
 
   function goTo(idx: number) {
     if (idx === current || fadingTo !== null) return
     advance(idx)
     setPaused(true)
-    setTimeout(() => setPaused(false), 9000)
+    setTimeout(() => setPaused(false), 8000)
   }
 
   function go(dir: 1 | -1) {
@@ -84,24 +84,18 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
   const s = screenshots[current]
   const nextS = fadingTo !== null ? screenshots[fadingTo] : null
   const transitioning = fadingTo !== null
-  const loaded = ready.has(current)
 
   if (n === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center px-6 py-24">
-        <div className="text-center max-w-sm">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[var(--color-accent)]/10 mb-6 ring-1 ring-[var(--color-accent)]/20">
-            <svg className="w-8 h-8 text-[var(--color-accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold tracking-tight text-[var(--color-text-dim)] mb-2">This story is waiting to be written</h3>
-          <p className="text-sm text-[var(--color-text-muted)] leading-relaxed mb-8">Every great journey starts with a single block. Upload your first screenshot and begin your archive.</p>
-          <Link href="/gallery" className="inline-flex items-center gap-2 text-sm px-5 py-2.5 rounded-full bg-[var(--color-accent)] text-black font-semibold hover:bg-white transition-colors">
-            Begin your archive
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-            </svg>
+      <div className="flex-1 flex items-center justify-center px-6 py-20">
+        <div className="max-w-[520px] w-full bg-[#e8e0d0] border border-[#d4c9b8] p-8 shadow-[0_12px_30px_rgba(0,0,0,0.25)] rotate-[-0.3deg] relative">
+          <div className="absolute -top-3 left-8 w-20 h-5 bg-[#f0deb8]/90 border border-black/5 shadow-sm rotate-[-2deg]" />
+          <div className="absolute -top-2 right-12 w-16 h-5 bg-[#f0deb8]/85 border border-black/5 shadow-sm rotate-[2deg]" />
+          <div className="font-mono text-[11px] tracking-[0.16em] text-[#8d847a] mb-3">ARCHIVE — EMPTY SHEET</div>
+          <h3 className="font-serif text-[24px] font-bold tracking-tight text-[#1a1816] leading-none">This story is waiting<br />to be written.</h3>
+          <p className="mt-3 text-[14px] leading-relaxed text-[#5a5348]">Every great journey starts with a single block. Upload your first screenshot and begin your archive.</p>
+          <Link href="/gallery" className="mt-6 inline-flex items-center gap-2 text-[12px] font-mono tracking-widest px-4 py-2 bg-[#1a1816] text-[#e8e0d0] hover:bg-black transition-colors">
+            BEGIN ARCHIVE →
           </Link>
         </div>
       </div>
@@ -109,307 +103,242 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
   }
 
   return (
-    <div
-      className="flex-1 relative flex flex-col isolate overflow-hidden"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-    >
-      {/* Ambient */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-32 -left-32 w-[720px] h-[720px] rounded-full bg-[var(--color-accent)]/10 blur-[120px]" />
-        <div className="absolute top-1/3 -right-40 w-[640px] h-[640px] rounded-full bg-[#c9a87a]/[0.06] blur-[120px]" />
-        <div className="absolute inset-0 opacity-[0.04]" style={{
-          backgroundImage: `linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px)`,
-          backgroundSize: '48px 48px'
-        }} />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[var(--color-bg)]/40" />
-      </div>
+    <div className="flex-1 relative flex flex-col">
+      {/* Ruled paper faint lines behind left — notebook feel, not glow */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.035]" style={{
+        backgroundImage: `repeating-linear-gradient(transparent, transparent 27px, #d4c9b8 27px, transparent 28px)`,
+        backgroundPosition: '0 112px'
+      }} />
 
-      {/* Vertical marquee edge — desktop only */}
-      <div className="hidden xl:flex absolute right-0 top-1/2 -translate-y-1/2 h-[70vh] items-center pointer-events-none select-none">
-        <div className="rotate-90 origin-center whitespace-nowrap flex items-center gap-3 text-[10px] tracking-[0.28em] font-mono text-white/20">
-          <span className="w-8 h-px bg-white/20" />
-          COORD • X: 1847 &nbsp; Y: 64 &nbsp; Z: -2931 &nbsp; • &nbsp; CHUNK [ 115, -183 ] &nbsp; • &nbsp; SEED: - 492044728
-          <span className="w-8 h-px bg-white/20" />
-        </div>
-      </div>
+      <div className="w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 flex-1 flex flex-col justify-center">
+        <div className="grid lg:grid-cols-[1.05fr_1.4fr] gap-8 lg:gap-12 xl:gap-16 items-start">
 
-      <div className="w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 flex-1 flex flex-col justify-center">
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-6 xl:gap-10 items-center">
-
-          {/* Left — editorial */}
-          <div className="lg:col-span-5 xl:col-span-5 flex flex-col relative">
-            {/* Eyebrow pill */}
-            <div className="inline-flex items-center gap-2 self-start rounded-full border border-[var(--color-accent)]/20 bg-[var(--color-accent)]/10 px-3 py-1.5 backdrop-blur-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent)] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--color-accent)]"></span>
-              </span>
-              <span className="text-[11px] font-medium tracking-[0.12em] uppercase text-[var(--color-accent)]">Chunk by chunk — archive v.01</span>
-              <span className="hidden sm:inline-flex ml-1 text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-black/30 text-white/60 border border-white/10">{n} featured</span>
+          {/* LEFT */}
+          <div className="flex flex-col pt-1">
+            {/* Eyebrow — typewriter, not pill */}
+            <div className="flex items-center gap-3 font-mono text-[11px] tracking-[0.16em] text-white/45">
+              <span className="hidden sm:inline w-6 h-px bg-white/20" />
+              <span>ARCHIVE V.01 — <span className="text-[#a9b998]">{n} FRAMES</span> — FIELD NOTES</span>
+              <span className="w-6 h-px bg-white/20 hidden sm:inline" />
             </div>
 
-            {/* Title */}
-            <div className="relative mt-6">
-              {/* Watermark behind */}
-              <div className="pointer-events-none select-none absolute -top-10 -left-4 sm:-left-6 text-[84px] sm:text-[112px] lg:text-[128px] font-black leading-none tracking-[-0.08em] text-white/[0.03]">01</div>
+            {/* Title — serif, ink */}
+            <h1 className="mt-5 font-serif font-black tracking-[-0.04em] leading-[0.82] text-[48px] sm:text-[56px] lg:text-[64px] xl:text-[72px]">
+              <span className="block text-[#a9b998]">Chunk</span>
+              <span className="block text-[#f2ede6] -mt-1">Journal</span>
+            </h1>
 
-              <h1 className="relative text-[44px] sm:text-[56px] lg:text-[68px] xl:text-[78px] font-black tracking-[-0.06em] leading-[0.84]">
-                <span className="block text-[var(--color-accent)]">Chunk</span>
-                <span className="block text-white -mt-1 lg:-mt-2 flex items-baseline gap-3">
-                  Journal
-                  <span className="hidden sm:inline-flex items-center justify-center w-7 h-7 lg:w-8 lg:h-8 rounded-full border border-white/15 text-[10px] font-mono font-medium tracking-widest text-white/40 -translate-y-2">®</span>
-                </span>
-              </h1>
-
-              {/* Underline scribble */}
-              <div className="mt-3 flex items-center gap-3">
-                <div className="h-1 w-12 rounded-full bg-[var(--color-accent)]" />
-                <div className="h-px flex-1 max-w-[180px] bg-gradient-to-r from-[var(--color-accent)]/40 to-transparent" />
-                <span className="text-[10px] font-mono tracking-[0.18em] text-white/30">EST • 2026</span>
+            {/* Hand-drawn underline — svg wobble */}
+            <div className="mt-3 max-w-[320px]">
+              <svg viewBox="0 0 320 12" className="w-full h-3 text-[#a9b998] opacity-80" fill="none" preserveAspectRatio="none">
+                <path d="M2 8 C 40 2, 80 10, 120 6 S 200 3, 260 7 S 310 9, 318 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" opacity="0.9" />
+                <path d="M2 10 C 60 4, 110 12, 170 8 S 250 6, 318 8" stroke="currentColor" strokeWidth="0.7" strokeLinecap="round" fill="none" opacity="0.35" />
+              </svg>
+              <div className="flex justify-between items-center mt-1 font-mono text-[10px] tracking-[0.18em] text-white/25">
+                <span>EST. 2026</span>
+                <span>CHUNK BY CHUNK</span>
               </div>
             </div>
 
-            <p className="mt-6 text-[15px] sm:text-[16px] leading-[1.7] text-[var(--color-text-dim)] max-w-[46ch] border-l-2 border-[var(--color-accent)]/30 pl-4">
+            <p className="mt-6 text-[15px] sm:text-[16px] leading-[1.65] text-[#d4c9b8] max-w-[44ch] font-[450]">
               A collection of the worlds I&apos;ve explored, the places I&apos;ve built, and the people I&apos;ve met along the way.
-              <span className="text-white/80"> Every screenshot tells a story —</span> this is where I choose to keep them.
+              <span className="text-[#f2ede6]"> Every screenshot tells a story —</span> this is where I choose to keep them.
             </p>
+            <div className="mt-2 font-hand text-[15px] text-[#a9b998] rotate-[-0.8deg] hidden sm:block">
+              — catalogued with care, not generated.
+            </div>
 
-            {/* CTAs */}
+            {/* CTAs — sharp, ink, not pills */}
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <Link
                 href="/gallery"
-                className="group relative inline-flex items-center gap-2.5 pl-6 pr-2 py-2 rounded-full bg-[var(--color-accent)] text-black font-semibold text-[14px] overflow-hidden transition-all hover:bg-white hover:scale-[1.02] active:scale-[0.99]"
+                className="inline-flex items-center gap-3 px-5 py-3 bg-[#e8e0d0] text-[#1a1816] font-mono text-[12px] tracking-[0.12em] font-bold border border-[#d4c9b8] shadow-[3px_3px_0_rgba(0,0,0,0.25)] hover:shadow-[2px_2px_0_rgba(0,0,0,0.25)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
               >
-                Enter the Gallery
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-black text-white group-hover:bg-[var(--color-accent)] group-hover:text-black transition-colors">
-                  <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                  </svg>
-                </span>
+                ENTER GALLERY
+                <span className="w-6 h-6 border border-[#1a1816] grid place-items-center text-[12px]">→</span>
               </Link>
-
-              <Link href="/login" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur text-sm font-medium text-white/80 hover:bg-white hover:text-black hover:border-white transition-colors">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Curator login
+              <Link href="/login" className="inline-flex items-center gap-2 px-4 py-3 text-[12px] font-mono tracking-[0.12em] text-white/70 border border-white/15 hover:border-white/30 hover:text-white hover:bg-white/[0.04] transition-colors">
+                CURATOR LOGIN
               </Link>
-
-              <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-white/30 ml-1">
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25L3.75 21l4.5-4.5V14.25l2.658-2.658c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" /></svg>
-                Press G to jump
-              </span>
             </div>
 
-            {/* Stats — as little cards */}
+            {/* Ink stamps — not glass cards */}
             <div className="mt-8 grid grid-cols-3 gap-3 max-w-[420px]">
               {[
-                { k: 'Screenshots', v: totalScreenshots, icon: '◧' },
-                { k: 'Worlds', v: totalWorlds, icon: '◈' },
-                { k: 'Tags', v: totalTags, icon: '#' },
+                { k: 'SHOTS', v: totalScreenshots, sub: 'FRAMES' },
+                { k: 'WORLDS', v: totalWorlds, sub: 'REALMS' },
+                { k: 'TAGS', v: totalTags, sub: 'MARKS' },
               ].map((stat) => (
-                <div key={stat.k} className="group relative rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur px-3 py-3 sm:px-4 sm:py-4 hover:bg-white/[0.07] hover:border-white/15 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono tracking-widest text-white/35">{stat.icon} {stat.k.toUpperCase()}</span>
-                    <span className="w-1 h-1 rounded-full bg-[var(--color-accent)] opacity-60 group-hover:opacity-100 transition-opacity" />
+                <div key={stat.k} className="border-[1.5px] border-[#a9b998]/40 bg-[#1a1816] px-3 py-3 relative overflow-hidden">
+                  <div className="absolute inset-0 border border-white/[0.04] m-[3px] pointer-events-none" />
+                  <div className="absolute top-1 right-1 w-1.5 h-1.5 bg-[#a9b998] rounded-full opacity-60" />
+                  <div className="font-mono text-[9px] tracking-[0.16em] text-white/40">{stat.k} • {stat.sub}</div>
+                  <div className="mt-1 font-serif text-[24px] font-black leading-none tracking-[-0.03em] text-[#f2ede6]">{stat.v}</div>
+                  <div className="mt-2 h-[2px] w-full bg-white/10">
+                    <div className="h-full bg-[#a9b998] w-[68%] opacity-70" />
                   </div>
-                  <div className="mt-1 text-[22px] sm:text-[26px] font-black tracking-[-0.04em] leading-none text-white">{stat.v}</div>
-                  <div className="mt-1 h-0.5 w-full bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-[var(--color-accent)] w-[62%] opacity-60 group-hover:w-[75%] transition-all duration-700" />
-                  </div>
+                  <div className="mt-1.5 font-mono text-[8px] tracking-[0.14em] text-white/25">INK STAMP 01</div>
                 </div>
               ))}
             </div>
 
-            {/* Tiny foot note under stats — adds editorial flavour */}
-            <div className="mt-3 hidden sm:flex items-center gap-2 text-[11px] font-mono text-white/25">
-              <span>—</span>
-              <span>catalogued & tagged, newest first</span>
-              <span className="w-6 h-px bg-white/10" />
-              <span className="text-white/40">↳ scroll to explore</span>
+            <div className="mt-4 flex items-center gap-3 font-mono text-[10px] tracking-wide text-white/25">
+              <span className="w-8 h-px bg-white/15" />
+              <span>catalogued & tagged — newest first</span>
             </div>
           </div>
 
-          {/* Right — showcase */}
-          <div className="lg:col-span-7 xl:col-span-7 relative lg:pl-4">
-            {/* Stack effect behind */}
-            <div className="absolute inset-0 hidden lg:block pointer-events-none">
-              <div className="absolute inset-0 rounded-[32px] bg-[var(--color-accent)]/10 rotate-[1.6deg] translate-x-3 translate-y-3 border border-[var(--color-accent)]/10" />
-              <div className="absolute inset-0 rounded-[32px] bg-white/[0.03] -rotate-[1.2deg] translate-x-1.5 translate-y-1.5 border border-white/5" />
+          {/* RIGHT — pinned print */}
+          <div className="relative lg:mt-2">
+            {/* Push pin */}
+            <div className="hidden lg:block absolute -top-3 left-1/2 -translate-x-1/2 z-20">
+              <div className="w-4 h-4 rounded-full bg-[#c45a3a] border-2 border-[#9a3a1e] shadow-[0_2px_6px_rgba(0,0,0,0.4)] relative">
+                <div className="absolute inset-1 rounded-full bg-white/25" />
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-[2px] h-3 bg-[#5a5348]" />
+              </div>
             </div>
 
-            <div className="relative rounded-[24px] sm:rounded-[28px] lg:rounded-[32px] overflow-hidden border border-white/10 shadow-[0_24px_64px_rgba(0,0,0,0.45),0_1px_0_rgba(255,255,255,0.06)_inset] bg-[#0f0e0d] group/showcase">
-
-              {/* Progress rail */}
-              <div className="absolute top-0 inset-x-0 h-[2px] z-20 bg-white/10">
-                <div
-                  key={current}
-                  className={`h-full bg-[var(--color-accent)] ${paused ? '[animation-play-state:paused]' : ''}`}
-                  style={{
-                    width: '100%',
-                    animation: 'shrinkWidth 5000ms linear forwards',
-                    transformOrigin: 'left'
-                  }}
-                />
+            <div className="relative bg-[#e8e0d0] p-[8px] sm:p-[10px] shadow-[0_18px_45px_rgba(0,0,0,0.45),0_1px_0_rgba(255,255,255,0.4)_inset] rotate-[0.4deg] sm:rotate-[0.7deg] border border-[#d4c9b8]/70">
+              {/* Tape — top */}
+              <div className="absolute -top-3 left-4 sm:left-8 w-[84px] h-[22px] bg-[#f0deb8]/90 border border-black/[0.06] shadow-[0_1px_4px_rgba(0,0,0,0.15)] rotate-[-2.2deg] backdrop-blur-[1px] z-10">
+                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, transparent 4px)` }} />
+              </div>
+              <div className="absolute -top-2.5 right-6 sm:right-14 w-[72px] h-[20px] bg-[#f0deb8]/85 border border-black/[0.06] shadow-[0_1px_4px_rgba(0,0,0,0.12)] rotate-[1.8deg] z-10">
+                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0,0,0,0.05) 3px, transparent 4px)` }} />
               </div>
 
-              {/* Image layer */}
-              <div className="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3] xl:aspect-[16/11] overflow-hidden bg-[var(--color-bg-card)]">
-                {!loaded && (
-                  <div className="absolute inset-0 animate-pulse bg-[#1a1918]">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent" />
-                  </div>
-                )}
+              {/* Paper inner — image */}
+              <div className="relative bg-[#0f0e0d] border border-[#1a1816] overflow-hidden">
+                {/* thin ink progress at top edge of paper */}
+                <div className="absolute top-0 inset-x-0 h-[2px] bg-[#d4c9b8]/30 z-20">
+                  <div
+                    key={current}
+                    className="h-full bg-[#1a1816]"
+                    style={{
+                      width: '100%',
+                      transformOrigin: 'left',
+                      animation: paused ? 'none' : 'shrinkWidth 5500ms linear forwards',
+                    }}
+                  />
+                </div>
 
-                {nextS && (
+                <div className="relative aspect-[4/3] sm:aspect-[16/11] overflow-hidden bg-[#0f0e0d]">
+                  {nextS && (
+                    <img
+                      key={`next-${fadingTo}`}
+                      src={imgSrc(nextS.id)}
+                      alt=""
+                      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${transitioning ? 'opacity-100' : 'opacity-0'}`}
+                      draggable={false}
+                    />
+                  )}
                   <img
-                    key={`next-${fadingTo}`}
-                    src={imgSrc(nextS.id)}
-                    alt=""
-                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[650ms] ${transitioning ? 'opacity-100' : 'opacity-0'}`}
+                    key={`cur-${current}`}
+                    src={imgSrc(s.id)}
+                    alt={s.title || s.filename}
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${transitioning ? 'opacity-0' : 'opacity-100'}`}
                     draggable={false}
                   />
-                )}
+                  {/* subtle vignette, not gloss */}
+                  <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_40px_rgba(0,0,0,0.25)]" />
 
-                <img
-                  key={`cur-${current}`}
-                  src={imgSrc(s.id)}
-                  alt={s.title || s.filename}
-                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[650ms] ${transitioning ? 'opacity-0' : 'opacity-100'} ${paused ? '' : 'group-hover/showcase:scale-[1.03]'} transition-transform duration-[7000ms] ease-out`}
-                  draggable={false}
-                />
-
-                {/* Film grain + vignette */}
-                <div className="absolute inset-0 pointer-events-none mix-blend-soft-light opacity-20" style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E")`,
-                }} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent pointer-events-none" />
-                <div className="absolute inset-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] pointer-events-none rounded-[inherit]" />
-                <div className="absolute inset-0 opacity-0 group-hover/showcase:opacity-100 transition-opacity duration-500 bg-gradient-to-tr from-transparent via-white/[0.04] to-white/[0.08] pointer-events-none" />
-
-                {/* Top meta bar */}
-                <div className="absolute top-0 inset-x-0 p-3 sm:p-4 flex items-start justify-between gap-3 pointer-events-none">
-                  <div className="flex items-center gap-2 pointer-events-auto">
-                    <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-black/55 backdrop-blur-md border border-white/10 text-[11px] font-medium text-white/90">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]" />
-                      LIVE ARCHIVE
+                  {/* Top left — frame ticket, like a filing label */}
+                  <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10 flex items-center gap-1.5">
+                    <div className="bg-[#e8e0d0] border border-[#1a1816]/15 px-2 py-1 flex items-center gap-2 shadow-sm">
+                      <span className="font-mono text-[10px] font-bold tracking-widest text-[#1a1816]">FRAME {String(current + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}</span>
+                      <span className="hidden sm:inline w-px h-3 bg-black/15" />
+                      <span className="hidden sm:inline font-mono text-[10px] tracking-wide text-[#5a5348]">{new Date(s.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
                     </div>
-                    <div className="flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full bg-black/45 backdrop-blur-md border border-white/10 text-[11px] font-mono text-white/70">
-                      <span className="hidden sm:inline text-white/40">FRAME</span> {String(current + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}
-                    </div>
+                    {s.panorama && <span className="bg-[#1a1816] text-[#e8e0d0] font-mono text-[10px] font-bold tracking-widest px-2 py-1 border border-[#1a1816]">360°</span>}
                   </div>
 
-                  {n > 1 && (
-                    <div className="flex items-center gap-1.5 pointer-events-auto">
-                      <button onClick={() => go(-1)} aria-label="Previous" className="w-8 h-8 sm:w-9 sm:h-9 grid place-items-center rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white/80 hover:bg-white hover:text-black hover:border-white transition-colors">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
-                      </button>
-                      <div className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/10">
-                        {screenshots.slice(0, 7).map((_, i) => (
-                          <button key={i} onClick={() => goTo(i)} aria-label={`Go to ${i + 1}`} className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? 'w-5 bg-white' : 'w-1.5 bg-white/30 hover:bg-white/60'}`} />
-                        ))}
-                        {n > 7 && <span className="text-[10px] font-mono text-white/40 ml-1">+{n - 7}</span>}
-                      </div>
-                      <button onClick={() => go(1)} aria-label="Next" className="w-8 h-8 sm:w-9 sm:h-9 grid place-items-center rounded-full bg-white text-black border border-white hover:bg-white/90 transition-colors shadow-lg">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Center play/pause hint — appears on hover */}
-                <button
-                  onClick={() => setPaused(p => !p)}
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/15 grid place-items-center text-white/90 opacity-0 group-hover/showcase:opacity-100 scale-90 group-hover/showcase:scale-100 transition-all duration-300 hover:bg-black/60"
-                  aria-label={paused ? 'Play' : 'Pause'}
-                >
-                  {paused ? (
-                    <svg className="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5.14v14l11-7z" /></svg>
-                  ) : (
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" /></svg>
-                  )}
-                </button>
-
-                {/* Bottom glass card */}
-                <div className="absolute bottom-0 inset-x-0 p-3 sm:p-4 lg:p-5">
-                  <div className={`rounded-[18px] sm:rounded-[20px] border border-white/10 bg-black/45 backdrop-blur-xl p-3.5 sm:p-4 flex gap-3 sm:gap-4 items-end transition-all duration-500 ${transitioning ? 'opacity-0 translate-y-3' : 'opacity-100 translate-y-0'}`}>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1.5">
+                  {/* Bottom caption strip — paper, not glass */}
+                  <div className="absolute bottom-0 inset-x-0 bg-[#e8e0d0] border-t-[1.5px] border-[#1a1816] flex gap-3 items-stretch z-10">
+                    <div className="flex-1 min-w-0 px-3 sm:px-4 py-3">
+                      <div className="flex items-center gap-2 flex-wrap">
                         {s.world && (
-                          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wide px-2.5 py-1 rounded-full bg-[var(--color-accent)] text-black">
-                            <span className="w-1.5 h-1.5 rounded-full bg-black/40" />
-                            {s.world.name}
+                          <span className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-widest font-bold px-2 py-1 bg-[#1a1816] text-[#e8e0d0] border border-[#1a1816]">
+                            ● {s.world.name.toUpperCase()}
                           </span>
                         )}
-                        <span className="hidden sm:inline-flex text-[11px] font-mono text-white/45">{new Date(s.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} • {s.panorama ? ' PANORAMA' : ' SCREENSHOT'}</span>
-                        {s.panorama && <span className="inline-flex text-[10px] font-bold tracking-widest px-1.5 py-0.5 rounded bg-white text-black">360°</span>}
+                        <span className="font-mono text-[10px] tracking-wide text-[#8d847a] hidden sm:inline">{s.panorama ? 'PANORAMA' : 'SCREENSHOT'} • {s.width ?? '—'}×{s.height ?? '—'}</span>
                       </div>
-                      <h2 className="text-[18px] sm:text-[20px] lg:text-[22px] font-bold leading-tight tracking-[-0.03em] text-white truncate">{s.title || s.filename}</h2>
-                      {s.description && <p className="hidden sm:block mt-1 text-[13px] leading-snug text-white/60 line-clamp-1">{s.description}</p>}
-                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <div className={`mt-1 transition-all duration-400 ${transitioning ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}>
+                        <h2 className="font-serif text-[17px] sm:text-[19px] font-bold leading-none tracking-[-0.02em] text-[#1a1816] truncate">{s.title || s.filename}</h2>
+                        {s.description && <p className="hidden sm:block mt-1 font-mono text-[11px] leading-snug text-[#5a5348] line-clamp-1">{s.description}</p>}
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
                         {s.tags?.slice(0, 3).map(t => (
-                          <span key={t.id} className="text-[11px] font-medium px-2 py-1 rounded-full bg-white/10 text-white/80 border border-white/10 backdrop-blur">#{t.name}</span>
+                          <span key={t.id} className="font-hand text-[13px] leading-none text-[#5a5348] bg-white/60 border border-black/10 px-2 py-1 rotate-[-0.5deg]">#{t.name}</span>
                         ))}
-                        {s.tags && s.tags.length > 3 && <span className="text-[11px] font-mono text-white/40">+{s.tags.length - 3}</span>}
-                        {s.tags?.length === 0 && <span className="text-[11px] text-white/30 italic">untagged</span>}
+                        {s.tags && s.tags.length > 3 && <span className="font-mono text-[10px] text-[#8d847a] self-center">+{s.tags.length - 3}</span>}
+                        {s.tags?.length === 0 && <span className="font-hand text-[13px] text-[#8d847a]">— untagged</span>}
                       </div>
                     </div>
 
-                    <div className="hidden sm:flex flex-col items-end gap-2 flex-shrink-0">
+                    <div className="hidden sm:flex flex-col justify-between items-end p-3 border-l border-dashed border-black/15 bg-[#f2ede6]/60 min-w-[124px]">
                       <Link
                         href={`/gallery?world=${s.world?.slug ?? ''}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-full bg-white text-black hover:bg-[var(--color-accent)] transition-colors whitespace-nowrap"
+                        className="w-full text-center font-mono text-[11px] tracking-widest font-bold px-3 py-2 bg-[#1a1816] text-[#e8e0d0] hover:bg-black border border-[#1a1816] transition-colors"
                       >
-                        View world
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                        VIEW WORLD ↗
                       </Link>
-                      <span className="text-[10px] font-mono tracking-wide text-white/30 hidden lg:inline">CLICK TO EXPAND • ESC TO CLOSE</span>
+                      <span className="font-mono text-[9px] tracking-wide text-[#8d847a]">FILE #{s.id.slice(0, 6).toUpperCase()}</span>
                     </div>
 
-                    {/* Mobile arrow */}
-                    <div className="sm:hidden flex-shrink-0 w-9 h-9 rounded-full bg-white text-black grid place-items-center">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-                    </div>
+                    {/* mobile arrow */}
+                    <Link href={`/gallery?world=${s.world?.slug ?? ''}`} className="sm:hidden self-center mr-3 w-8 h-8 bg-[#1a1816] text-[#e8e0d0] grid place-items-center border border-[#1a1816] shrink-0">
+                      <span className="text-[14px]">→</span>
+                    </Link>
                   </div>
-
-                  {/* Mobile dots below glass — simpler */}
-                  {n > 1 && (
-                    <div className="flex sm:hidden items-center justify-center gap-1 mt-3">
-                      {screenshots.slice(0, 7).map((_, i) => (
-                        <button key={i} onClick={() => goTo(i)} className={`h-1 rounded-full transition-all ${i === current ? 'w-6 bg-white' : 'w-1 bg-white/40'}`} />
-                      ))}
-                    </div>
-                  )}
                 </div>
               </div>
 
-              {/* Bottom accent line */}
-              <div className="hidden lg:flex items-center justify-between px-4 py-2.5 bg-black/60 backdrop-blur border-t border-white/5">
-                <span className="text-[11px] font-mono tracking-[0.16em] text-white/30">CHUNKJOURNAL // ARCHIVE PREVIEW</span>
-                <span className="text-[11px] font-mono text-white/30 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  {paused ? 'PAUSED' : 'AUTO • 5.0s'}
-                  <span className="hidden sm:inline text-white/20">—</span>
-                  <span className="hidden sm:inline text-white/40">{s.width ?? '—'} × {s.height ?? '—'}</span>
+              {/* Bottom paper footer — typewriter */}
+              <div className="flex items-center justify-between pt-2 px-1 font-mono text-[9px] sm:text-[10px] tracking-[0.14em] text-[#5a5348]">
+                <span>CHUNKJOURNAL // SHEET 01 — ARCHIVE PREVIEW</span>
+                <span className="flex items-center gap-2">
+                  <span className="hidden sm:inline w-1.5 h-1.5 bg-[#c45a3a] rounded-full" />
+                  <span className="hidden sm:inline">{paused ? 'PAUSED' : 'AUTO 5.5s'}</span>
+                  <span className="flex items-center gap-1 ml-1">
+                    <button onClick={() => go(-1)} className="w-6 h-6 grid place-items-center border border-[#1a1816]/15 bg-white/60 hover:bg-[#1a1816] hover:text-[#e8e0d0] transition-colors" aria-label="Previous">‹</button>
+                    <button onClick={() => go(1)} className="w-6 h-6 grid place-items-center border border-[#1a1816] bg-[#1a1816] text-[#e8e0d0] hover:bg-black transition-colors" aria-label="Next">›</button>
+                  </span>
                 </span>
+              </div>
+
+              {/* dots — minimal, not pills */}
+              {n > 1 && (
+                <div className="hidden sm:flex items-center gap-1 justify-center pt-1.5">
+                  {screenshots.slice(0, 8).map((_, i) => (
+                    <button key={i} onClick={() => goTo(i)} aria-label={`Go to ${i + 1}`} className={`h-[5px] transition-all border ${i === current ? 'w-6 bg-[#1a1816] border-[#1a1816]' : 'w-[5px] bg-transparent border-[#1a1816]/25 hover:border-[#1a1816]/50'}`} />
+                  ))}
+                  {n > 8 && <span className="font-mono text-[9px] text-[#8d847a] ml-1">+{n - 8}</span>}
+                </div>
+              )}
+            </div>
+
+            {/* Handwritten note to side */}
+            <div className="hidden xl:block absolute -right-6 top-1/2 -translate-y-1/2 rotate-[1.2deg]">
+              <div className="font-hand text-[13px] leading-tight text-[#d4c9b8]/60 whitespace-nowrap">
+                <div>→ tap image to pause</div>
+                <div className="text-[#a9b998]/50">— catalogued {new Date().getFullYear()}</div>
               </div>
             </div>
 
-            {/* Floating tip — desktop */}
-            <div className="hidden lg:flex absolute -bottom-6 -right-2 items-center gap-2 text-[11px] font-mono text-white/25">
-              <span className="hidden xl:inline">drag to scrub • click tags to filter</span>
-              <span className="w-6 h-px bg-white/10 hidden xl:inline" />
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full border border-white/10 bg-white/[0.03]">
-                <span className="w-1 h-1 rounded-full bg-[var(--color-accent)]" />
-                curated
-              </span>
-            </div>
+            {/* Mobile dots */}
+            {n > 1 && (
+              <div className="flex sm:hidden items-center justify-center gap-1 mt-3">
+                {screenshots.slice(0, 8).map((_, i) => (
+                  <button key={i} onClick={() => goTo(i)} className={`h-[4px] border transition-all ${i === current ? 'w-5 bg-[#e8e0d0] border-[#e8e0d0]' : 'w-[4px] bg-transparent border-white/20'}`} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Bottom fade rule */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      <div className="mt-6 lg:mt-8 h-px w-full bg-[#25211e]" />
     </div>
   )
 }
