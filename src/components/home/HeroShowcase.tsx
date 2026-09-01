@@ -95,13 +95,9 @@ export default function HeroShowcase({ initialScreenshots, totalScreenshots, tot
       <div className="w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16 flex-1 flex flex-col justify-center">
         <div className="grid lg:grid-cols-[0.95fr_1.35fr] gap-10 lg:gap-16 xl:gap-20 items-center">
 
-          {/* LEFT — 4 elements only: badge, headline, one line, one CTA */}
+          {/* LEFT — headline, one line, one CTA */}
           <div className="flex flex-col">
-            <div className="font-mono text-[11px] tracking-[0.16em] text-white/35">
-              ARCHIVE 01
-            </div>
-
-            <h1 className="mt-3 font-serif font-black tracking-[-0.04em] leading-[0.86] text-[46px] sm:text-[58px] lg:text-[64px]">
+            <h1 className="font-serif font-black tracking-[-0.04em] leading-[0.86] text-[46px] sm:text-[58px] lg:text-[64px]">
               <span className="block text-[#a9b998]">Chunk</span>
               <span className="block text-[#f2ede6] -mt-1">Journal</span>
             </h1>
